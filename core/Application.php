@@ -4,13 +4,20 @@ namespace Bukubuku\Core;
 
 class Application
 {
-    public Request $request;
-    public Router $router;
+    public static Application $app;
 
-    public function __construct()
+    public Request $request;
+    public Response $response;
+    public Router $router;
+    public string $rootDirectory;
+
+    public function __construct(string $rootDirectory)
     {
+        self::$app = $this;
         $this->request = new Request();
-        $this->router = new Router($this->request);
+        $this->response = new Response();
+        $this->router = new Router();
+        $this->rootDirectory = $rootDirectory;
     }
 
     public function run()
