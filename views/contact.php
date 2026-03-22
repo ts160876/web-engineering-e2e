@@ -2,16 +2,16 @@
 
 <form method="post">
     <div class="mb-3">
-        <label>Subject</label>
-        <input type="text" name="subject" class="form-control">
+        <label for="subject">Subject</label>
+        <input type="text" id="subject" name="subject" class="form-control">
     </div>
     <div class="mb-3">
-        <label>E-Mail</label>
-        <input type="email" name="email" class="form-control">
+        <label for="email">E-Mail</label>
+        <input type="email" id="email" name="email" class="form-control">
     </div>
     <div class="mb-3">
-        <label>Message</label>
-        <textarea name="email" class="form-control"></textarea>
+        <label for="message">Message</label>
+        <textarea id="message" name="message" class="form-control"></textarea>
     </div>
     <button type="submit" class="btn btn-primary">Submit</button>
 </form>

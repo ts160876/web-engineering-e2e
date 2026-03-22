@@ -6,17 +6,17 @@ class Router
 {
     private array $routes;
 
-    public function register(string $requestMethod, string $path, $action)
+    public function register(string $requestMethod, string $path, callable|array|string $action)
     {
         $this->routes[$requestMethod][$path] = $action;
     }
 
-    public function registerGet(string $path, $action)
+    public function registerGet(string $path, callable|array|string $action)
     {
         $this->register('GET', $path, $action);
     }
 
-    public function registerPost(string $path, $action)
+    public function registerPost(string $path, callable|array|string $action)
     {
         $this->register('POST', $path, $action);
     }
@@ -31,8 +31,15 @@ class Router
         //Call the action, if it could be determined. Otherwise show 'Not found'.
         if ($action !== null) {
             if (is_callable($action)) {
+                //The action is a callable (i.e., function).
                 return call_user_func($action);
+            } elseif (is_array($action)) {
+                //The action is an array. We need to instantiate the corresponding controller and call the method.
+                [$class, $method] = $action;
+                $object = new $class();
+                return call_user_func_array([$object, $method], []);
             } else {
+                //The action is a string (i.e., a view).
                 return $this->renderView($action);
             }
         } else {
@@ -41,10 +48,10 @@ class Router
         }
     }
 
-    public function renderView(string $view): string
+    public function renderView(string $view, array $parameters = []): string
     {
         $layoutContent = $this->getLayoutContent();
-        $viewContent = $this->getViewContent($view);
+        $viewContent = $this->getViewContent($view, $parameters);
 
         return str_replace('{{content}}', $viewContent, $layoutContent);
     }
@@ -58,10 +65,16 @@ class Router
         return ob_get_clean();
     }
 
-    private function getViewContent($view): string
+    private function getViewContent(string $view, array $parameters = []): string
     {
         //Start output buffering.
         ob_start();
+
+        //Make the parameters passed to this method available to the view.
+        foreach ($parameters as $key => $value) {
+            $$key = $value;
+        }
+
         include_once Application::$app->rootDirectory . '/views/' . $view . '.php';
         //Return the content from the buffer and clear the buffer.
         return ob_get_clean();

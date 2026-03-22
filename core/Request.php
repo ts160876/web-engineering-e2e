@@ -33,4 +33,21 @@ class Request
 
         return $path;
     }
+
+    public function getParameters(): array
+    {
+        $parameters = [];
+
+        if ($this->getRequestMethod() === 'GET') {
+            foreach ($_GET as $key => $value) {
+                $parameters[$key] = filter_input(INPUT_GET, $key, FILTER_SANITIZE_SPECIAL_CHARS);
+            }
+        } else {
+            foreach ($_POST as $key => $value) {
+                $parameters[$key] = filter_input(INPUT_POST, $key, FILTER_SANITIZE_SPECIAL_CHARS);
+            }
+        }
+
+        return $parameters;
+    }
 }
