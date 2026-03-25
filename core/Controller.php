@@ -2,7 +2,7 @@
 
 namespace Bukubuku\Core;
 
-class Controller
+abstract class Controller
 {
     public function renderView($view, $parameters = []): string
     {
