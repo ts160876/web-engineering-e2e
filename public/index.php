@@ -1,5 +1,10 @@
 <?php
 
+//Import the classes.
+use Bukubuku\Core\Application;
+use Bukubuku\Controllers\SiteController;
+use Bukubuku\Controllers\UserController;
+
 //Ensure that errors are propagated to help with troubleshooting.
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -8,23 +13,27 @@ error_reporting(E_ALL);
 //Ensure that autoloading works.
 require_once __DIR__ . '/../vendor/autoload.php';
 
-//Import the classes.
-use Bukubuku\Core\Application;
-use Bukubuku\Controllers\SiteController;
-use Bukubuku\Controllers\AuthController;
+//Load the content from the .env file.
+$dotenv = Dotenv\Dotenv::createImmutable(dirname(__DIR__));
+$dotenv->load();
 
 //Create the application.
-$application = new Application(dirname(__DIR__));
+$application = new Application(
+    $_ENV['DB_DSN'],
+    $_ENV['DB_USERNAME'],
+    $_ENV['DB_PASSWORD'],
+    dirname(__DIR__)
+);
 
 //Register some routes.
 $application->router->registerGet('/', [SiteController::class, 'home']);
 $application->router->registerGet('/contact', [SiteController::class, 'contact']);
 $application->router->registerPost('/contact', [SiteController::class, 'handleContact']);
 
-$application->router->registerGet('/registration', [AuthController::class, 'registration']);
-$application->router->registerPost('/registration', [AuthController::class, 'handleRegistration']);
-$application->router->registerGet('/login', [AuthController::class, 'login']);
-$application->router->registerPost('/login', [AuthController::class, 'handleLogin']);
+$application->router->registerGet('/registration', [UserController::class, 'registration']);
+$application->router->registerPost('/registration', [UserController::class, 'handleRegistration']);
+$application->router->registerGet('/login', [UserController::class, 'login']);
+$application->router->registerPost('/login', [UserController::class, 'handleLogin']);
 
 $application->router->registerPost('/register', 'register');
 
@@ -32,7 +41,7 @@ $application->router->registerGet('/books/list', 'books/list');
 $application->router->registerGet('/books/display', 'books/display');
 $application->router->registerGet('/books/create', 'books/create');
 
-$application->router->registerGet('/users/list', 'users/list');
+$application->router->registerGet('/users/list', [UserController::class, 'list']);
 $application->router->registerGet('/users/display', 'users/display');
 $application->router->registerGet('/users/create', 'users/create');
 

@@ -13,13 +13,18 @@ class Rule
     public const NUMBER = 'number';
     public const MATCH = 'match';
 
-    static public function constructErrorMessage(string $propertyName, string $ruleName, array $parameters): string
+    static public function constructErrorMessage(string $propertyName, string $propertyLabel, string $ruleName, array $parameters): string
     {
         $errorMessage = Rule::getErrorMessage($ruleName);
 
         //If the property name is not part of the parameters, we add it here.
         if (!array_key_exists(RuleParameter::PROPERTY, $parameters)) {
             $parameters[RuleParameter::PROPERTY] = $propertyName;
+        }
+
+        //Same for label
+        if (!array_key_exists(RuleParameter::LABEL, $parameters)) {
+            $parameters[RuleParameter::LABEL] = $propertyLabel;
         }
 
         foreach ($parameters as $parameterName => $parameterValue) {
@@ -34,19 +39,19 @@ class Rule
     {
         switch ($ruleName) {
             case Rule::REQUIRED:
-                return 'The field {{property}} is required.';
+                return 'The field {{label}} is required.';
             case Rule::MIN_LENGTH;
-                return 'The minimum lenth for field {{property}} is {{min}}.';
+                return 'The minimum lenth for field {{label}} is {{min}}.';
             case Rule::MAX_LENGTH;
-                return 'The maximum lenth for field {{property}} is {{max}}.';
+                return 'The maximum lenth for field {{label}} is {{max}}.';
             case Rule::UNIQUE:
-                return 'The value in field {{property}} does already exist.';
+                return 'The value in field {{label}} does already exist.';
             case Rule::EMAIL:
-                return 'The field {{property}} must be a valid e-mail.';
+                return 'The field {{label}} must be a valid e-mail.';
             case Rule::NUMBER:
-                return 'The field {{property}} must be a valid number.';
+                return 'The field {{label}} must be a valid number.';
             case Rule::MATCH:
-                return 'The field {{property}} must match {{match}}.';
+                return 'The field {{label}} must match {{match}}.';
             default:
                 return 'There is a severe error.';
         }

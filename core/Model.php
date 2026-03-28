@@ -4,23 +4,51 @@ namespace Bukubuku\Core;
 
 abstract class Model
 {
+
+    //The following abstract methods have to be implemented in subclasses.
+    //Get the mapping property=>label.
+    abstract static protected function propertyMapping(): array;
+    //Get the rulesets. 
+    abstract static protected function getRulesets(): array;
+    //Check if property is unique. 
+    abstract protected function isUnique(string $property): bool;
+
+    //Get all properties.
+    public static function getPropertyNames(): array
+    {
+        return array_keys(static::propertyMapping());
+    }
+
+    //Get the label of a property.
+    public static function getLabel($property): string
+    {
+        return static::propertyMapping()[$property] ?? $property;
+    }
+
+    //Load parameters (from HTML form or session) into model.
+    public static function fromHttp(array $properties, array $errors = [])
+    {
+        return new static($properties, $errors);
+    }
+
+    //Errors collected during validation
     private array $errors = [];
 
-    //Load parameters (from HTML forms) into model.
-    public function loadParameters(array $parameters)
+    //Create object (only called via factory methods, hence private).
+    private function __construct(array $properties, array $errors)
     {
         //Iterate over all parameters and split them into the name and value of the property.
-        foreach ($parameters as $propertyName => $propertyValue) {
+        foreach ($properties as $propertyName => $propertyValue) {
             //If a property with the name exists, then we set the value of this property.
             //Otherwise we ignore this parameter.
             if (property_exists($this, $propertyName)) {
                 $this->{$propertyName} = $propertyValue;
             }
         }
-    }
 
-    //Get the rulesets. This method is implemented in derived models.
-    abstract protected function getRulesets(): array;
+        //Set the messages.
+        $this->errors = $errors;
+    }
 
     //Validate the data currently in the model.
     public function validateData(): bool
@@ -32,33 +60,35 @@ abstract class Model
         //The value are the rules. The rules are again an associative array.
         //For each rule the key stores the name of the rule. 
         //For each rule the value stores the parameters if applicable (i.e., can be an empty array).
-        $rulesets = $this->getRulesets();
+        $rulesets = static::getRulesets();
 
-        foreach ($rulesets as $propertyName => $rules) {
-            $value = $this->{$propertyName};
+        foreach ($rulesets as $property => $rules) {
+            $value = $this->{$property};
             foreach ($rules as $ruleName => $parameters) {
                 switch ($ruleName) {
                     case Rule::REQUIRED:
                         if (!$value) {
-                            $this->addError($propertyName, Rule::REQUIRED, $parameters);
+                            $this->addError($property, $this->getLabel($property), Rule::REQUIRED, $parameters);
                         }
                         break;
                     case Rule::MIN_LENGTH;
                         if (strlen($value) < $parameters[RuleParameter::MIN]) {
-                            $this->addError($propertyName, Rule::MIN_LENGTH, $parameters);
+                            $this->addError($property, $this->getLabel($property), Rule::MIN_LENGTH, $parameters);
                         }
                         break;
                     case Rule::MAX_LENGTH;
                         if (strlen($value) > $parameters[RuleParameter::MAX]) {
-                            $this->addError($propertyName, Rule::MAX_LENGTH, $parameters);
+                            $this->addError($property, $this->getLabel($property), Rule::MAX_LENGTH, $parameters);
                         }
                         break;
                     case Rule::UNIQUE:
-                        //Not yet implemented!
+                        if ($this->isUnique($property) != true) {
+                            $this->addError($property, $this->getLabel($property), Rule::UNIQUE, $parameters);
+                        }
                         break;
                     case Rule::EMAIL:
                         if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
-                            $this->addError($propertyName, Rule::EMAIL, $parameters);
+                            $this->addError($property, $this->getLabel($property), Rule::EMAIL, $parameters);
                         }
                         break;
                     case Rule::NUMBER:
@@ -66,7 +96,7 @@ abstract class Model
                         break;
                     case Rule::MATCH:
                         if ($value !== $this->{$parameters[RuleParameter::MATCH]}) {
-                            $this->addError($propertyName, Rule::MATCH, $parameters);
+                            $this->addError($property, $this->getLabel($property), Rule::MATCH, $parameters);
                         }
                         break;
                 }
@@ -74,36 +104,49 @@ abstract class Model
         }
 
         //Check if errors exist.
-        if (empty($this->errors)) {
-            return true;
-        } else {
-            return false;
+        return !$this->hasError();
+    }
+
+    //Get the data to sore in session context. 
+    public function toHttp(): array
+    {
+
+        $propertyNames = self::getPropertyNames();
+        $properties = [];
+
+        foreach ($propertyNames as $propertyName) {
+            $properties[$propertyName] = $this->{$propertyName};
         }
+
+        return [
+            'properties' => $properties,
+            'errors' => $this->errors
+        ];
     }
 
     //Add an error to the model.
-    private function addError(string $propertyName, string $ruleName, array $parameters)
+    private function addError(string $propertyName, string $propertyLabel, string $ruleName, array $parameters)
     {
-        $this->errors[$propertyName][] = Rule::constructErrorMessage($propertyName, $ruleName, $parameters);
+        $this->errors[$propertyName][] = Rule::constructErrorMessage($propertyName, $propertyLabel, $ruleName, $parameters);
     }
 
     //Check if an error exists (for a given property).
-    public function hasError(string $propertyName): bool
+    public function hasError(string $property = ''): bool
     {
-        if (key_exists($propertyName, $this->errors)) {
-            return true;
+        if ($property != '') {
+            if (key_exists($property, $this->errors)) {
+                return true;
+            } else {
+                return false;
+            }
         } else {
-            return false;
+            return !empty($this->errors);
         }
     }
 
     //Get the first error (for a given property).
-    public function getFirstError(string $propertyName): string
+    public function getFirstError(string $property): string
     {
-        if (key_exists($propertyName, $this->errors)) {
-            return  $this->errors[$propertyName][0];
-        } else {
-            return '';
-        }
+        return  $this->errors[$property][0] ?? '';
     }
 }
