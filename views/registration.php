@@ -4,6 +4,9 @@ use Bukubuku\Core\Form\Button;
 use Bukubuku\Core\Form\Form;
 use Bukubuku\Core\Form\Field;
 
+$this->title = 'Registration';
+
+
 $form = new Form('', 'post', $model);
 ?>
 
@@ -14,5 +17,5 @@ $form = new Form('', 'post', $model);
 <?= $form->field(Field::EMAIL, 'email'); ?>
 <?= $form->field(Field::PASSWORD, 'password'); ?>
 <?= $form->field(Field::PASSWORD, 'confirmPassword'); ?>
-<?= $form->button(Button::SUBMIT, 'submit', 'Submit') ?>
+<?= $form->button(Button::SUBMIT, 'submit', 'Register') ?>
 <?= $form->end(); ?>

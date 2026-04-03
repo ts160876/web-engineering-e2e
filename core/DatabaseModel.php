@@ -7,9 +7,9 @@ abstract class DatabaseModel extends Model
     //The following abstract methods have to be implemented in subclasses.
     //They include database-related information.
     //Get database table.
-    abstract static protected function getTable(): string;
+    abstract static protected function getTableName(): string;
     //Get the primary key of the database table (assumption: one column).
-    abstract static protected function getPrimaryKey(): string;
+    abstract static protected function getPrimaryKeyName(): string;
     //Get the mapping column=>property.
     abstract static protected function columnMapping(): array;
 
@@ -46,6 +46,25 @@ abstract class DatabaseModel extends Model
         return Application::$app->db->pdo->prepare($query);
     }
 
+
+
+    //Load parameters (from HTML form or session) into model.
+    public static function fromDatabase($primaryKeyValue)
+    {
+        $tableName = static::getTableName();
+        $columnNames = static::getColumnNames();
+        $columnsWithAlias = array_map(fn($columnName) => static::addAlias($columnName), $columnNames);
+        $primaryKeyName = static::getPrimaryKeyName();
+
+        //Create SQL statement.
+        $query = 'SELECT ' . implode(', ', $columnsWithAlias)  . ' FROM ' . $tableName . ' WHERE ' . $primaryKeyName . '= :' . $primaryKeyName . ';';
+        $statement = static::prepare($query);
+        $statement->execute([$primaryKeyName => $primaryKeyValue]);
+        $properties = $statement->fetchAll()[0];
+
+        return new static($properties);
+    }
+
     //Add an alias to column.
     public static function addAlias(string $column): string
     {
@@ -56,13 +75,12 @@ abstract class DatabaseModel extends Model
     //Read all records from the database
     public static function getAll(): array
     {
-        $table = static::getTable();
-        $columns = static::getColumns();
-        $columnsWithAlias = array_map(fn($column) => static::addAlias($column), $columns);
-
+        $tableName = static::getTableName();
+        $columnNames = static::getColumnNames();
+        $columnsWithAlias = array_map(fn($columnName) => static::addAlias($columnName), $columnNames);
 
         //Create SQL statement.
-        $query = 'SELECT ' . implode(', ', $columnsWithAlias)  . ' FROM ' . $table . ';';
+        $query = 'SELECT ' . implode(', ', $columnsWithAlias)  . ' FROM ' . $tableName . ';';
         $statement = static::prepare($query);
         $statement->execute();
 
@@ -71,15 +89,15 @@ abstract class DatabaseModel extends Model
 
     public function insert(): bool
     {
-        $table = static::getTable();
+        $tableName = static::getTableName();
         $columnNames = static::getColumnNames();
         $parameters = array_map(fn($columnName) => ":$columnName", $columnNames);
 
         //Create SQL statement.
-        $query = 'INSERT INTO ' . $table .  ' (' . implode(', ', $columnNames) . ') VALUES (' . implode(', ', $parameters) . ');';
+        $query = 'INSERT INTO ' . $tableName .  ' (' . implode(', ', $columnNames) . ') VALUES (' . implode(', ', $parameters) . ');';
         $statement = static::prepare($query);
 
-        //Fill the parameters.
+        //Bind the parameters.
         foreach ($columnNames as $columnName) {
             $propertyName = static::columnToProperty($columnName);
             if ($propertyName != null) {
@@ -98,14 +116,14 @@ abstract class DatabaseModel extends Model
 
     protected function isUnique(string $propertyName): bool
     {
-        $table = static::getTable();
+        $tableName = static::getTableName();
         $columnName = static::propertyToColumn($propertyName);
 
         //Create SQL statement.
-        $query = "SELECT COUNT(*) FROM $table WHERE $columnName = :$columnName;";
+        $query = "SELECT COUNT(*) FROM $tableName WHERE $columnName = :$columnName;";
         $statement = static::prepare($query);
 
-        //Fill the parameter and execute the statement.
+        //Bind the parameter and execute the statement.
         $value = $this->{$propertyName};
         $statement->bindValue(":$columnName", $value);
         $statement->execute();

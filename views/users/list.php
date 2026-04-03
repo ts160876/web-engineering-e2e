@@ -1,3 +1,7 @@
+<?php
+$this->title = 'List Users';
+?>
+
 <h1>List Users</h1>
 
 <table class="table">

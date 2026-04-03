@@ -3,14 +3,13 @@
 use Bukubuku\Core\Application;
 ?>
 
-
 <!doctype html>
 <html lang="en">
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>BukuBuku</title>
+    <title><?= $this->title ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 </head>
 
@@ -63,14 +62,26 @@ use Bukubuku\Core\Application;
                     </li>
                 </ul>
                 <!-- ms-auto (margin-start auto) pushes content to the right -->
-                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="/web-engineering-e2e/public/index.php/registration">Registration</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="/web-engineering-e2e/public/index.php/login">Login</a>
-                    </li>
-                </ul>
+                <!-- Here we need to differentiate whether the user is logged in or not -->
+                <?php if (Application::$app->isGuest()): ?>
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="/web-engineering-e2e/public/index.php/registration">Registration</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="/web-engineering-e2e/public/index.php/login">Login</a>
+                        </li>
+                    </ul>
+                <?php else: ?>
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="/web-engineering-e2e/public/index.php/profile">Profile</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="/web-engineering-e2e/public/index.php/logout"><?= 'Logout (' . Application::$app->getFullName() . ')' ?></a>
+                        </li>
+                    </ul>
+                <?php endif ?>
             </div>
         </div>
     </nav>

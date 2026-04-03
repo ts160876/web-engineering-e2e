@@ -7,7 +7,6 @@ class Session
 
     private const FLASH_MEMORY_KEY = 'flashMemory';
 
-
     public function __construct()
     {
         session_start();
@@ -40,5 +39,20 @@ class Session
     public function getFlashMemory(string $key)
     {
         return $_SESSION[Session::FLASH_MEMORY_KEY][$key]['value'] ?? null;
+    }
+
+    public function set($key, $value)
+    {
+        $_SESSION[$key] = $value;
+    }
+
+    public function get($key)
+    {
+        return $_SESSION[$key] ?? null;
+    }
+
+    public function unset($key)
+    {
+        unset($_SESSION[$key]);
     }
 }

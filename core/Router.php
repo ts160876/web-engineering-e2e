@@ -2,6 +2,9 @@
 
 namespace Bukubuku\Core;
 
+use Bukubuku\Core\exception\NotAuthorizedException;
+use Bukubuku\Core\exception\NotFoundException;
+
 class Router
 {
     private array $routes;
@@ -28,6 +31,11 @@ class Router
         $path = Application::$app->request->getPath();
         $action = $this->routes[$requestMethod][$path] ?? null;
 
+        //Check the user authorization.
+        if (!Application::$app->isAuthorized($path)) {
+            throw new NotAuthorizedException();
+        }
+
         //Call the action, if it could be determined. Otherwise show 'Not found'.
         if ($action !== null) {
             if (is_callable($action)) {
@@ -40,43 +48,10 @@ class Router
                 return call_user_func_array([$object, $method], []);
             } else {
                 //The action is a string (i.e., a view).
-                return $this->renderView($action);
+                return (new View())->render($action);
             }
         } else {
-            Application::$app->response->setResponseCode(404);
-            return $this->renderView('404');
+            throw new NotFoundException();
         }
-    }
-
-    public function renderView(string $view, array $parameters = []): string
-    {
-        $layoutContent = $this->getLayoutContent();
-        $viewContent = $this->getViewContent($view, $parameters);
-
-        return str_replace('{{content}}', $viewContent, $layoutContent);
-    }
-
-    private function getLayoutContent(): string
-    {
-        //Start output buffering.
-        ob_start();
-        include_once Application::$app->rootDirectory . '/views/layouts/main.php';
-        //Return the content from the buffer and clear the buffer.
-        return ob_get_clean();
-    }
-
-    private function getViewContent(string $view, array $parameters = []): string
-    {
-        //Start output buffering.
-        ob_start();
-
-        //Make the parameters passed to this method available to the view.
-        foreach ($parameters as $key => $value) {
-            $$key = $value;
-        }
-
-        include_once Application::$app->rootDirectory . '/views/' . $view . '.php';
-        //Return the content from the buffer and clear the buffer.
-        return ob_get_clean();
     }
 }

@@ -26,16 +26,16 @@ abstract class Model
     }
 
     //Load parameters (from HTML form or session) into model.
-    public static function fromHttp(array $properties, array $errors = [])
+    public static function fromHttp(array $data)
     {
-        return new static($properties, $errors);
+        return new static($data['properties'] ?? [], $data['errors'] ?? []);
     }
 
     //Errors collected during validation
     private array $errors = [];
 
     //Create object (only called via factory methods, hence private).
-    private function __construct(array $properties, array $errors)
+    protected function __construct(array $properties = [], array $errors = [])
     {
         //Iterate over all parameters and split them into the name and value of the property.
         foreach ($properties as $propertyName => $propertyValue) {

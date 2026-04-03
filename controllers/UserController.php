@@ -20,31 +20,38 @@ class UserController extends Controller
 
     public function registration(): string
     {
-        $flashMemory = Application::$app->session->getFlashMemory(User::class) ?? [];
-        $properties = $flashMemory['properties'] ?? [];
-        $errors = $flashMemory['errors'] ?? [];
-        $registrationModel = User::fromHttp($properties, $errors);
-        return $this->renderView('registration', ['model' => $registrationModel]);
+        $user = User::fromHttp(Application::$app->getFlashMemory(User::class) ?? []);
+        return $this->renderView('registration', ['model' => $user]);
     }
 
     public function handleRegistration(): string|null
     {
-        //$registrationModel = new RegistrationModel();
-        $registrationModel = User::fromHttp(Application::$app->request->getParameters());
-        if ($registrationModel->validateData() == true) {
-            if ($registrationModel->register() == true) {
-                Application::$app->session->setFlashMemory('success', 'You have successfully registered.');
-            } else {
-                Application::$app->session->setFlashMemory('success', 'Your registration failed.');
-            }
+        //Get the data from the (POST) request.
+        $user = User::fromHttp(
+            ['properties' => Application::$app->request->getParameters()]
+        );
 
-            Application::$app->response->redirect('/web-engineering-e2e/public/index.php/');
-            return null;
+        //Validate the data.
+        if ($user->validateData() == true) {
+            if ($user->register() == true) {
+                //Registration was successful. 
+                Application::$app->setFlashSuccessMessage('You have successfully registered.');
+                //Redirect to home.
+                Application::$app->response->redirect('/');
+                return null;
+            } else {
+                //Registration as not successful.
+                Application::$app->setFlashErrorMessage('Your registration failed.');
+                //Redirect back to the form.
+                Application::$app->response->redirect('/registration');
+                return null;
+            }
         } else {
-            //For now we return the view once more. 
-            Application::$app->session->setFlashMemory('error', 'The form has errors. Please correct them.');
-            Application::$app->session->setFlashMemory(User::class, $registrationModel->toHttp());
-            Application::$app->response->redirect('/web-engineering-e2e/public/index.php/registration');
+            //Validation has errors.
+            Application::$app->setFlashErrorMessage('The form has errors. Please correct them.');
+            Application::$app->setFlashMemory(User::class, $user->toHttp());
+            //Redirect back to the form.
+            Application::$app->response->redirect('/registration');
             return null;
         }
     }

@@ -5,6 +5,7 @@ namespace Bukubuku\Models;
 use Bukubuku\Core\DatabaseModel;
 use Bukubuku\Core\Rule;
 use Bukubuku\Core\RuleParameter;
+use PDOStatement;
 
 class User extends DatabaseModel
 {
@@ -19,12 +20,12 @@ class User extends DatabaseModel
     public int $isAdmin = 0;
 
     //Get database table.
-    static protected function getTable(): string
+    static protected function getTableName(): string
     {
         return 'users';
     }
     //Get the primary key of the database table (assumption: one column).
-    static protected function getPrimaryKey(): string
+    static protected function getPrimaryKeyName(): string
     {
         return 'user_id';
     }
@@ -87,5 +88,42 @@ class User extends DatabaseModel
     public function register(): bool
     {
         return $this->insert();
+    }
+
+    public function checkPassword($password): bool
+    {
+        if ($this->password == $password) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function getFullName(): string
+    {
+        return $this->firstName . ' ' . $this->lastName;
+    }
+
+    public static function getUserIdByEmail(string $email): int
+    {
+        //Create SQL statement
+        $query = "SELECT user_id FROM users WHERE email = :email;";
+        $statement = static::prepare($query);
+        //Bind the parameter and execute the statement.
+        //$statement->bindValue();
+        $statement->execute([':email' => $email]);
+        $x = $statement->fetchColumn();
+        return $x;
+    }
+
+    public static function checkLogin(string $email, string $password): bool
+    {
+        $userId = User::getUserIdByEmail($email);
+        if ($userId != 0) {
+            $user = User::fromDatabase($userId);
+            return $user->checkPassword($password);
+        } else {
+            return false;
+        }
     }
 }

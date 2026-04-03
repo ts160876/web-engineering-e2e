@@ -1,13 +1,17 @@
-<h1>Login</h1>
+<?php
 
-<form method="post">
-    <div class="mb-3">
-        <label for="email">E-Mail</label>
-        <input type="email" id="email" name="email" class="form-control">
-    </div>
-    <div class="mb-3">
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" class="form-control">
-    </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
-</form>
+use Bukubuku\Core\Form\Button;
+use Bukubuku\Core\Form\Form;
+use Bukubuku\Core\Form\Field;
+
+$this->title = 'Login';
+
+$form = new Form('', 'post', $model);
+?>
+
+<h1>Login</h1>
+<?= $form->start(); ?>
+<?= $form->field(Field::EMAIL, 'email'); ?>
+<?= $form->field(Field::PASSWORD, 'password'); ?>
+<?= $form->button(Button::SUBMIT, 'submit', 'Login') ?>
+<?= $form->end(); ?>
