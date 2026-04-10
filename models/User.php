@@ -5,7 +5,6 @@ namespace Bukubuku\Models;
 use Bukubuku\Core\DatabaseModel;
 use Bukubuku\Core\Rule;
 use Bukubuku\Core\RuleParameter;
-use PDOStatement;
 
 class User extends DatabaseModel
 {
@@ -16,6 +15,7 @@ class User extends DatabaseModel
     public string $email = '';
     public string $password = '';
     public string $confirmPassword = '';
+    //Per default the user is not an admin.
     //A boolean is treated as TINYINT by MySQL.
     public int $isAdmin = 0;
 

@@ -42,7 +42,18 @@ abstract class Model
             //If a property with the name exists, then we set the value of this property.
             //Otherwise we ignore this parameter.
             if (property_exists($this, $propertyName)) {
-                $this->{$propertyName} = $propertyValue;
+                //Implement special logic for DateTime
+                if ($this->{$propertyName} instanceof \DateTime || $this->{$propertyName} === null) {
+                    if ($propertyValue instanceof \DateTime) {
+                        $this->{$propertyName} = $propertyValue;
+                    } elseif ($propertyValue != '') {
+                        $this->{$propertyName} = new \DateTime($propertyValue);
+                    } else {
+                        $this->{$propertyName} = null;
+                    }
+                } else {
+                    $this->{$propertyName} = $propertyValue;
+                }
             }
         }
 
@@ -86,6 +97,12 @@ abstract class Model
                             $this->addError($property, $this->getLabel($property), Rule::UNIQUE, $parameters);
                         }
                         break;
+                    case Rule::EXISTS:
+                        $exists = call_user_func([$parameters[RuleParameter::CLASSNAME], 'checkExistence'], $value);
+                        if ($exists != true) {
+                            $this->addError($property, $this->getLabel($property), Rule::EXISTS, $parameters);
+                        }
+                        break;
                     case Rule::EMAIL:
                         if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
                             $this->addError($property, $this->getLabel($property), Rule::EMAIL, $parameters);
@@ -97,6 +114,16 @@ abstract class Model
                     case Rule::MATCH:
                         if ($value !== $this->{$parameters[RuleParameter::MATCH]}) {
                             $this->addError($property, $this->getLabel($property), Rule::MATCH, $parameters);
+                        }
+                        break;
+                    case Rule::OPTIONS:
+                        if (!in_array($value, $parameters[RuleParameter::OPTIONS])) {
+                            $this->addError($property, $this->getLabel($property), Rule::OPTIONS, $parameters);
+                        }
+                        break;
+                    case Rule::ISBN:
+                        if (!preg_match('/^\d{3}-\d{10}$/', $value)) {
+                            $this->addError($property, $this->getLabel($property), Rule::ISBN, $parameters);
                         }
                         break;
                 }

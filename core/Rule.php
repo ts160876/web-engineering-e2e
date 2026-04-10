@@ -9,9 +9,12 @@ class Rule
     public const MIN_LENGTH = 'minLength';
     public const MAX_LENGTH = 'maxLength';
     public const UNIQUE = 'unique';
+    public const EXISTS = 'exists';
     public const EMAIL = 'email';
     public const NUMBER = 'number';
     public const MATCH = 'match';
+    public const OPTIONS = 'options';
+    public const ISBN = 'isbn';
 
     static public function constructErrorMessage(string $propertyName, string $propertyLabel, string $ruleName, array $parameters): string
     {
@@ -28,7 +31,8 @@ class Rule
         }
 
         foreach ($parameters as $parameterName => $parameterValue) {
-            $errorMessage = str_replace('{{' . $parameterName . '}}', $parameterValue, $errorMessage);
+            //$errorMessage = str_replace('{{' . $parameterName . '}}', $parameterValue, $errorMessage);
+            $errorMessage = str_replace('{{' . $parameterName . '}}', strval($parameterValue), $errorMessage);
         }
         return $errorMessage;
     }
@@ -46,12 +50,18 @@ class Rule
                 return 'The maximum lenth for field {{label}} is {{max}}.';
             case Rule::UNIQUE:
                 return 'The value in field {{label}} does already exist.';
+            case Rule::EXISTS:
+                return 'The value in field {{label}} does not exist.';
             case Rule::EMAIL:
                 return 'The field {{label}} must be a valid e-mail.';
             case Rule::NUMBER:
                 return 'The field {{label}} must be a valid number.';
             case Rule::MATCH:
                 return 'The field {{label}} must match {{match}}.';
+            case Rule::OPTIONS:
+                return 'The value in field {{label}} is not allowed.';
+            case Rule::ISBN:
+                return 'The value in field {{label}} is not a valid ISBN (xxx-xxxxxxxxxx).';
             default:
                 return 'There is a severe error.';
         }

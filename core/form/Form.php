@@ -10,6 +10,8 @@ class Form
     public string $method;
     public Model $model;
     public array $fields;
+    public array $dropdownFields;
+    public array $textareas;
     public array $buttons;
 
     public function __construct(string $action, string $method, Model $model)
@@ -18,15 +20,33 @@ class Form
         $this->method = $method;
         $this->model = $model;
         $this->fields = [];
+        $this->dropdownFields = [];
+        $this->textareas = [];
         $this->buttons = [];
     }
 
     //Add a field to the form.
-    public function field(string $type, string $propertyName): Field
+    public function field(string $type, string $propertyName, bool $readonly = false): Field
     {
-        $field = new Field($type, $propertyName, $this);
+        $field = new Field($type, $propertyName, $this, $readonly);
         $this->fields[] = $field;
         return $field;
+    }
+
+    //Add a dropdown field to the form
+    public function dropdownField(string $propertyName, array $options, bool $readonly = false): DropdownField
+    {
+        $dropdownField = new DropdownField($propertyName, $options, $this, $readonly);
+        $this->dropdownFields[] = $dropdownField;
+        return $dropdownField;
+    }
+
+    //Add a textarea to the form
+    public function textarea(string $propertyName, bool $readonly = false)
+    {
+        $textarea = new Textarea($propertyName, $this, $readonly);
+        $this->textareas[] = $textarea;
+        return $textarea;
     }
 
     //Add a button to the form.

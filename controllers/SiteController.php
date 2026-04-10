@@ -4,6 +4,7 @@ namespace Bukubuku\Controllers;
 
 use Bukubuku\Core\Application;
 use Bukubuku\Core\Controller;
+use Bukubuku\Models\Contact;
 use Bukubuku\Models\Login;
 
 class SiteController extends Controller
@@ -16,12 +17,40 @@ class SiteController extends Controller
 
     public function contact(): string
     {
-        return $this->renderView('contact');
+        $contact = Contact::fromHttp(Application::$app->getFlashMemory(Contact::class) ?? []);
+        return $this->renderView('contact', ['model' => $contact]);
     }
 
-    public function handleContact(): string
+    public function handleContact(): string|null
     {
-        return 'Processing your contact request.';
+        //Get the data from the (POST) request.
+        $contact = Contact::fromHttp(
+            ['properties' => Application::$app->request->getParameters()]
+        );
+
+        //Validate the data.
+        if ($contact->validateData() == true) {
+            if ($contact->process() == true) {
+                //Context requests was successful. 
+                Application::$app->setFlashSuccessMessage('Your contact requests was sucessful. We will be in touch soon.');
+                //Redirect to home.
+                Application::$app->response->redirect('/');
+                return null;
+            } else {
+                //Contact request was not successful.
+                Application::$app->setFlashErrorMessage('Your contact request failed.');
+                //Redirect to contact.
+                Application::$app->response->redirect('/contact');
+                return null;
+            }
+        } else {
+            //Validation has errors.
+            Application::$app->setFlashErrorMessage('The form has errors. Please correct them.');
+            Application::$app->setFlashMemory(Contact::class, $contact->toHttp());
+            //Redirect back to the form.
+            Application::$app->response->redirect('/contact');
+            return null;
+        }
     }
 
     public function login(): string

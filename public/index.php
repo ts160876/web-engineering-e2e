@@ -1,9 +1,13 @@
 <?php
 
 //Import the classes.
+
 use Bukubuku\Core\Application;
+use Bukubuku\Controllers\BookController;
 use Bukubuku\Controllers\SiteController;
 use Bukubuku\Controllers\UserController;
+use Bukubuku\Controllers\CheckoutController;
+use Bukubuku\Models\Checkout;
 
 //Ensure that errors are propagated to help with troubleshooting.
 ini_set('display_errors', 1);
@@ -73,17 +77,23 @@ $application->router->registerGet('/profile', [SiteController::class, 'profile']
 $application->router->registerPost('/profile', [SiteController::class, 'handleProfile']);
 $application->router->registerGet('/logout', [SiteController::class, 'handleLogout']);
 
-$application->router->registerGet('/books/list', 'books/list');
-$application->router->registerGet('/books/display', 'books/display');
-$application->router->registerGet('/books/create', 'books/create');
+$application->router->registerGet('/books/list', [BookController::class, 'list']);
+$application->router->registerGet('/books/page', [BookController::class, 'page']);
+$application->router->registerGet('/books/edit', [BookController::class, 'edit']);
+$application->router->registerPost('/books/edit', [BookController::class, 'handleEdit']);
+$application->router->registerGet('/books/create', [BookController::class, 'create']);
+$application->router->registerPost('/books/create', [BookController::class, 'handleCreate']);
 
 $application->router->registerGet('/users/list', [UserController::class, 'list']);
-$application->router->registerGet('/users/display', 'users/display');
+$application->router->registerGet('/users/page', [UserController::class, 'page']);
 $application->router->registerGet('/users/create', 'users/create');
 
-$application->router->registerGet('/checkouts/list', 'checkouts/list');
-$application->router->registerGet('/checkouts/display', 'checkouts/display');
-$application->router->registerGet('/checkouts/create', 'checkouts/create');
+$application->router->registerGet('/checkouts/list', [CheckoutController::class, 'list']);
+$application->router->registerGet('/checkouts/page', [CheckoutController::class, 'page']);
+$application->router->registerGet('/checkouts/edit', [CheckoutController::class, 'edit']);
+$application->router->registerPost('/checkouts/edit', [CheckoutController::class, 'handleEdit']);
+$application->router->registerGet('/checkouts/create', [CheckoutController::class, 'create']);
+$application->router->registerPost('/checkouts/create', [CheckoutController::class, 'handleCreate']);
 
 //Authorizations
 $authorizations = [
@@ -115,7 +125,8 @@ $authorizations = [
         '/',
         '/contact',
         '/registration',
-        '/login'
+        '/login',
+        '/books/list'
     ]
 ];
 

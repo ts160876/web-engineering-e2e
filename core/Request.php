@@ -40,14 +40,20 @@ class Request
 
         if ($this->getRequestMethod() === 'GET') {
             foreach ($_GET as $key => $value) {
-                $parameters[$key] = filter_input(INPUT_GET, $key, FILTER_SANITIZE_SPECIAL_CHARS);
+                $parameters[$key] = filter_input(INPUT_GET, $key);
             }
         } else {
             foreach ($_POST as $key => $value) {
-                $parameters[$key] = filter_input(INPUT_POST, $key, FILTER_SANITIZE_SPECIAL_CHARS);
+                $parameters[$key] = filter_input(INPUT_POST, $key);
             }
         }
 
         return $parameters;
+    }
+
+    public function getParameter($key)
+    {
+        $parameters = $this->getParameters();
+        return $parameters[$key] ?? null;
     }
 }

@@ -46,8 +46,6 @@ abstract class DatabaseModel extends Model
         return Application::$app->db->pdo->prepare($query);
     }
 
-
-
     //Load parameters (from HTML form or session) into model.
     public static function fromDatabase($primaryKeyValue)
     {
@@ -73,18 +71,44 @@ abstract class DatabaseModel extends Model
     }
 
     //Read all records from the database
-    public static function getAll(): array
+    public static function getAll(int $page = 0, int $limit = 10): array
     {
         $tableName = static::getTableName();
         $columnNames = static::getColumnNames();
         $columnsWithAlias = array_map(fn($columnName) => static::addAlias($columnName), $columnNames);
 
         //Create SQL statement.
-        $query = 'SELECT ' . implode(', ', $columnsWithAlias)  . ' FROM ' . $tableName . ';';
+        $query = 'SELECT ' . implode(', ', $columnsWithAlias)  . ' FROM ' . $tableName;
+        if ($page != 0) {
+            $query = $query . ' LIMIT :limit OFFSET :offset;';
+            $offset = ($page - 1) * $limit;
+        } else {
+            $query = $query . ';';
+        }
+
         $statement = static::prepare($query);
+        if ($page != 0) {
+            $statement->bindValue(':limit', $limit, \PDO::PARAM_INT);
+            $statement->bindValue(':offset', $offset, \PDO::PARAM_INT);
+        }
         $statement->execute();
 
         return $statement->fetchAll();
+    }
+
+    public static function checkExistence(int $primaryKeyValue): bool
+    {
+        $tableName = static::getTableName();
+        $primaryKeyName = static::getPrimaryKeyName();
+
+        //Create SQL statement.
+        $query = "SELECT COUNT(*) FROM $tableName WHERE $primaryKeyName = :$primaryKeyName;";
+        $statement = static::prepare($query);
+
+        //Bind the parameter and execute the statement.
+        $statement->bindValue(":$primaryKeyName", $primaryKeyValue);
+        $statement->execute();
+        return $statement->fetchColumn();
     }
 
     public function insert(): bool
@@ -102,6 +126,55 @@ abstract class DatabaseModel extends Model
             $propertyName = static::columnToProperty($columnName);
             if ($propertyName != null) {
                 $value = $this->{$propertyName};
+                //Implement special logic for DateTime
+                if ($value instanceof \DateTime) {
+                    //$value = $value->format('Y-m-d');
+                    $value = $value->format('Y-m-d H:i:s');
+                }
+            } else {
+                $value = null;
+            }
+
+            $statement->bindValue(":$columnName", $value);
+        }
+
+        //Execute the statement.
+        $statement->execute();
+        return true;
+    }
+
+    public function update(array $properties = []): bool
+    {
+        $tableName = static::getTableName();
+        $primaryKeyName = static::getPrimaryKeyName();
+        if (empty($properties)) {
+            $columnNames = static::getColumnNames();
+        } else {
+            $columnNames = [];
+            foreach ($properties as $property) {
+                array_push($columnNames, static::propertyToColumn($property));
+            }
+        }
+        $columnNames = array_diff($columnNames, [$primaryKeyName]);
+        $columnNamesWithParameters = array_map(fn($columnName) => "$columnName = :$columnName", $columnNames);
+
+        //Create SQL statement.
+        $query = 'UPDATE ' . $tableName . ' SET ' . implode(', ', $columnNamesWithParameters) .
+            ' WHERE ' . $primaryKeyName . ' = :' . $primaryKeyName . ';';
+        $statement = static::prepare($query);
+
+        //Bind the parameters.
+        $primaryKeyPropertyName = static::columnToProperty($primaryKeyName);
+        $statement->bindValue(":$primaryKeyName", $this->{$primaryKeyPropertyName});
+        foreach ($columnNames as $columnName) {
+            $propertyName = static::columnToProperty($columnName);
+            if ($propertyName != null) {
+                $value = $this->{$propertyName};
+                //Implement special logic for DateTime
+                if ($value instanceof \DateTime) {
+                    //$value = $value->format('Y-m-d');
+                    $value = $value->format('Y-m-d H:i:s');
+                }
             } else {
                 $value = null;
             }

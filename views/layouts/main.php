@@ -33,8 +33,8 @@ use Bukubuku\Core\Application;
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="/web-engineering-e2e/public/index.php/books/create">Create Book</a></li>
-                            <li><a class="dropdown-item" href="/web-engineering-e2e/public/index.php/books/display">Display Book</a></li>
                             <li><a class="dropdown-item" href="/web-engineering-e2e/public/index.php/books/list">List Books</a></li>
+                            <li><a class="dropdown-item" href="/web-engineering-e2e/public/index.php/books/page">List Books (Paged)</a></li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
@@ -43,8 +43,9 @@ use Bukubuku\Core\Application;
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="/web-engineering-e2e/public/index.php/checkouts/create">Create Checkout</a></li>
-                            <li><a class="dropdown-item" href="/web-engineering-e2e/public/index.php/checkouts/display">Display Checkout</a></li>
                             <li><a class="dropdown-item" href="/web-engineering-e2e/public/index.php/checkouts/list">List Checkouts</a></li>
+                            <li><a class="dropdown-item" href="/web-engineering-e2e/public/index.php/checkouts/page">List Checkouts (Paged)</a></li>
+
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
@@ -53,8 +54,8 @@ use Bukubuku\Core\Application;
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="/web-engineering-e2e/public/index.php/users/create">Create User</a></li>
-                            <li><a class="dropdown-item" href="/web-engineering-e2e/public/index.php/users/display">Display User</a></li>
                             <li><a class="dropdown-item" href="/web-engineering-e2e/public/index.php/users/list">List Users</a></li>
+                            <li><a class="dropdown-item" href="/web-engineering-e2e/public/index.php/users/page">List Users (Paged)</a></li>
                         </ul>
                     </li>
                     <li class="nav-item">

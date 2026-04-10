@@ -102,6 +102,8 @@ class Application
 
     public function isAuthorized(string $path): bool
     {
+        return true;
+
         //Determine the user role.
         if ($this->isAdmin()) {
             $role = 'admin';
@@ -148,5 +150,24 @@ class Application
     public function getFlashErrorMessage(): string
     {
         return $this->session->getFlashMemory('error');
+    }
+
+    //Get cover path.
+    public function getCoverPath(string $isbn): string|bool
+    {
+        //That is a bit of a hack and should be done differently for productive usage.
+        if (!$this->doesCoverExist($isbn)) {
+            $isbn = '999-9999999999';
+        }
+
+        return substr($this->request->getScriptName(), 0, strlen($this->request->getScriptName()) - strlen('index.php')) . 'covers/' . $isbn . '.jpg';
+    }
+
+    //Check if cover exists.
+    private function doesCoverExist(string $isbn): string|bool
+    {
+        //This is a bit of a hack and should be done differently for productive usage.
+        $coverFile = $this->rootDirectory . '\\public\\covers\\' . $isbn . '.jpg';
+        return file_exists($coverFile);
     }
 }

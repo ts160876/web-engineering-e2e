@@ -1,21 +1,18 @@
 <?php
+
+use Bukubuku\Core\Form\Button;
+use Bukubuku\Core\Form\Form;
+use Bukubuku\Core\Form\Field;
+
 $this->title = 'Contact';
+
+$form = new Form('', 'post', $model);
 ?>
 
 <h1>Contact</h1>
-
-<form method="post">
-    <div class="mb-3">
-        <label for="subject">Subject</label>
-        <input type="text" id="subject" name="subject" class="form-control">
-    </div>
-    <div class="mb-3">
-        <label for="email">E-Mail</label>
-        <input type="email" id="email" name="email" class="form-control">
-    </div>
-    <div class="mb-3">
-        <label for="message">Message</label>
-        <textarea id="message" name="message" class="form-control"></textarea>
-    </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
-</form>
+<?= $form->start(); ?>
+<?= $form->field(Field::TEXT, 'subject'); ?>
+<?= $form->field(Field::EMAIL, 'email'); ?>
+<?= $form->textarea('message') ?>
+<?= $form->button(Button::SUBMIT, 'submit', 'Submit') ?>
+<?= $form->end(); ?>

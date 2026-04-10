@@ -61,4 +61,11 @@ class UserController extends Controller
         $users = User::getAll();
         return $this->renderView('users/list', ['users' => $users]);
     }
+
+    public function page(): string
+    {
+        $page = Application::$app->request->getParameter('page') ?? 1;
+        $users = User::getAll($page);
+        return $this->renderView('users/page', ['users' => $users, 'page' => $page]);
+    }
 }

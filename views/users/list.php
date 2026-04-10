@@ -4,6 +4,8 @@ $this->title = 'List Users';
 
 <h1>List Users</h1>
 
+<a class="btn btn-primary" href="/web-engineering-e2e/public/index.php/users/create" role="button">Create User</a>
+
 <table class="table">
     <thead>
         <tr>
@@ -18,7 +20,7 @@ $this->title = 'List Users';
     <tbody>
         <?php foreach ($users as $user): ?>
             <tr>
-                <td><a href="/web-engineering-e2e/public/index.php/users/display?<?= $user['userId'] ?>"><?= $user['userId'] ?></a></td>
+                <td><a href="/web-engineering-e2e/public/index.php/users/display?userId=<?= $user['userId'] ?>"><?= $user['userId'] ?></a></td>
                 <td><?= $user['firstName'] ?></td>
                 <td><?= $user['lastName'] ?></td>
                 <td><?= $user['email'] ?></td>
@@ -28,7 +30,3 @@ $this->title = 'List Users';
         <?php endforeach; ?>
     </tbody>
 </table>
-
-<i class="bi bi-check-square"></i>
-
-<a class="btn btn-primary" href="/web-engineering-e2e/public/index.php/users/create" role="button">Create User</a>

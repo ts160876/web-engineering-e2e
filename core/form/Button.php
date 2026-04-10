@@ -2,8 +2,6 @@
 
 namespace Bukubuku\Core\Form;
 
-use Bukubuku\Core\Model;
-
 class Button
 {
     public const SUBMIT = 'submit';
