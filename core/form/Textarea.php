@@ -12,7 +12,11 @@ class Textarea
     {
         $this->propertyName = $propertyName;
         $this->form = $form;
-        $this->readonly = $readonly;
+        if ($form->readonly == true) {
+            $this->readonly = true;
+        } else {
+            $this->readonly = $readonly;
+        }
     }
 
     //Print the field

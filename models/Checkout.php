@@ -66,4 +66,31 @@ class Checkout extends DatabaseModel
             ],
         ];
     }
+
+    //Read all records from the database
+    public static function getUserCheckouts(int $userId, int $page = 0, int $limit = 10): array
+    {
+        $tableName = static::getTableName();
+        $columnNames = static::getColumnNames();
+        $columnsWithAlias = array_map(fn($columnName) => static::addAlias($columnName), $columnNames);
+
+        //Create SQL statement.
+        $query = 'SELECT ' . implode(', ', $columnsWithAlias)  . ' FROM ' . $tableName . ' WHERE user_id = :user_id ';
+        if ($page != 0) {
+            $query = $query . ' LIMIT :limit OFFSET :offset;';
+            $offset = ($page - 1) * $limit;
+        } else {
+            $query = $query . ';';
+        }
+
+        $statement = static::prepare($query);
+        $statement->bindValue('user_id', $userId, \PDO::PARAM_INT);
+        if ($page != 0) {
+            $statement->bindValue(':limit', $limit, \PDO::PARAM_INT);
+            $statement->bindValue(':offset', $offset, \PDO::PARAM_INT);
+        }
+        $statement->execute();
+
+        return $statement->fetchAll();
+    }
 }

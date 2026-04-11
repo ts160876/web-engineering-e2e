@@ -1,10 +1,15 @@
 <?php
+
+use Bukubuku\Core\Application;
+
 $this->title = 'List Checkouts';
 ?>
 
-<h1>List Checkouts</h1>
+<h1><?= $this->title ?></h1>
 
-<a class="btn btn-primary" href="/web-engineering-e2e/public/index.php/checkouts/create" role="button">Create Checkout</a>
+<?php if (Application::$app->isAdmin() == true): ?>
+    <a class="btn btn-primary" href="/web-engineering-e2e/public/index.php/checkouts/create" role="button">Create Checkout</a>
+<?php endif; ?>
 
 <table class="table">
     <thead>

@@ -9,7 +9,7 @@ $this->title = 'Contact';
 $form = new Form('', 'post', $model);
 ?>
 
-<h1>Contact</h1>
+<h1><?= $this->title ?></h1>
 <?= $form->start(); ?>
 <?= $form->field(Field::TEXT, 'subject'); ?>
 <?= $form->field(Field::EMAIL, 'email'); ?>

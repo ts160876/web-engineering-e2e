@@ -94,17 +94,14 @@ class Application
     {
         if (!$this->isGuest()) {
             $user = User::fromDatabase(Application::$app->getUserId());
-            return $user->getFullName();
+            return $user->getFullName() . ', ' . $this->getRole();
         } else {
             return '';
         }
     }
 
-    public function isAuthorized(string $path): bool
+    private function getRole(): string
     {
-        return true;
-
-        //Determine the user role.
         if ($this->isAdmin()) {
             $role = 'admin';
         } elseif ($this->isCustomer()) {
@@ -112,6 +109,14 @@ class Application
         } else {
             $role = 'guest';
         }
+        return $role;
+    }
+
+    public function isAuthorized(string $path): bool
+    {
+        //Determine the user role.
+        $role = $this->getRole();
+        $script = $this->request->getScriptName();
 
         $allowedPaths = $this->authorizations[$role];
         if (in_array($path, $allowedPaths)) {
@@ -119,6 +124,11 @@ class Application
         } else {
             return false;
         }
+    }
+
+    public function pathToUrl(string $path): string
+    {
+        return $this->request->getScriptName() . $path;
     }
 
     //Set and get flash memory.

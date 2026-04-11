@@ -14,14 +14,19 @@ class DropdownField
         $this->propertyName = $propertyName;
         $this->options = $options;
         $this->form = $form;
-        $this->readonly = $readonly;
+        if ($form->readonly == true) {
+            $this->readonly = true;
+        } else {
+            $this->readonly = $readonly;
+        }
     }
 
     //Print the field
     public function __toString()
     {
 
-        $optionString = '<option value="">--Select a value--</option>';
+        //$optionString = '<option value="">--Select a value--</option>';
+        $optionString = '';
         foreach ($this->options as $optionValue => $optionText) {
             $optionString .= sprintf(
                 '<option value="%s" %s>%s</option>',
@@ -34,7 +39,7 @@ class DropdownField
         return sprintf(
             '<div class="mb-3">
               <label for="%s">%s</label>
-              <select id="%s" name="%s" class="form-select %s">
+              <select id="%s" name="%s" %s class="form-select %s">
                 %s
               </select>
               <div class="invalid-feedback">
@@ -45,6 +50,9 @@ class DropdownField
             $this->form->model->getLabel($this->propertyName),
             $this->propertyName,
             $this->propertyName,
+            //We assume that the value of a disabled dropdown field is not needed.
+            //That will not necessarily hold true in productive environments.
+            $this->readonly ? 'disabled' : '',
             $this->form->model->hasError($this->propertyName) ? ' is-invalid' : '',
             $optionString,
             $this->form->model->getFirstError($this->propertyName)

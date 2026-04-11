@@ -10,7 +10,7 @@ $form = new Form('', 'post', $model);
 
 ?>
 
-<h1>Create Checkout</h1>
+<h1><?= $this->title ?></h1>
 <?= $form->start(); ?>
 <?= $form->field(Field::NUMBER, 'userId'); ?>
 <?= $form->field(Field::NUMBER, 'bookId'); ?>

@@ -5,6 +5,7 @@ namespace Bukubuku\Controllers;
 use Bukubuku\Core\Application;
 use Bukubuku\Core\Controller;
 use Bukubuku\Models\Checkout;
+use Bukubuku\Models\BookCheckout;
 use Bukubuku\Core\exception\InternalErrorException;
 
 class CheckoutController extends Controller
@@ -107,13 +108,53 @@ class CheckoutController extends Controller
         return $this->renderView('checkouts/page', ['checkouts' => $checkouts, 'page' => $page]);
     }
 
+    public function myCheckouts(): string
+    {
+        if (Application::$app->isCustomer() == true) {
+            $userId = Application::$app->getUserId();
+            $page = Application::$app->request->getParameter('page') ?? 1;
+            $checkouts = Checkout::getUserCheckouts($userId, $page);
+            return $this->renderView('checkouts/mycheckouts', ['checkouts' => $checkouts, 'page' => $page]);
+        } else {
+            throw new InternalErrorException();
+        }
+    }
+
     public function return(): string
     {
-        return '';
+        if (Application::$app->getFlashMemory(BookCheckout::class) != null) {
+            $bookCheckout = BookCheckout::fromHttp(Application::$app->getFlashMemory(BookCheckout::class));
+        } else {
+            $checkoutId = Application::$app->request->getParameter('checkoutId');
+            if ($checkoutId != null) {
+                $bookCheckout = BookCheckout::prepareReturn($checkoutId);
+            } else {
+                throw new InternalErrorException();
+            }
+        }
+        return $this->renderView('checkouts/return', ['model' => $bookCheckout]);
     }
 
     public function handleReturn(): string|null
     {
-        return null;
+        //Get the data from the (POST) request.
+        $bookCheckout = BookCheckOut::fromHttp(
+            ['properties' => Application::$app->request->getParameters()]
+        );
+
+        //Validate the data. We keep this a bit simple here, since all fields are readonly.
+        if ($bookCheckout->returnBook() == true) {
+            //Checkout was successful. 
+            Application::$app->setFlashSuccessMessage('You have successfully returned the book.');
+            //Redirect to home.
+            Application::$app->response->redirect('/');
+            return null;
+        } else {
+            //Registration as not successful.
+            Application::$app->setFlashErrorMessage('Your return of the book failed.');
+            //Redirect to home.
+            Application::$app->response->redirect('/');
+            return null;
+        }
     }
 }

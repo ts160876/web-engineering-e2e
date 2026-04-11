@@ -10,23 +10,30 @@ class Button
     public string $buttonName;
     public string $buttonText;
     public Form $form;
+    public bool $readonly;
 
-    public function __construct(string $type, string $buttonName, string $buttonText, Form $form)
+    public function __construct(string $type, string $buttonName, string $buttonText, Form $form, bool $readonly = false)
     {
         $this->type = $type;
         $this->buttonName = $buttonName;
         $this->buttonText = $buttonText;
         $this->form = $form;
+        if ($form->readonly == true) {
+            $this->readonly = true;
+        } else {
+            $this->readonly = $readonly;
+        }
     }
 
     //Print the field
     public function __toString()
     {
         return sprintf(
-            '<button type="%s" id="%s" name="%s" class="btn btn-primary">%s</button>',
+            '<button type="%s" id="%s" name="%s" %s class="btn btn-primary">%s</button>',
             $this->type,
             $this->buttonName,
             $this->buttonName,
+            $this->readonly ? 'disabled' : '',
             $this->buttonText
         );
     }

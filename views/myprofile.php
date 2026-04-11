@@ -5,18 +5,17 @@ use Bukubuku\Core\Form\Form;
 use Bukubuku\Core\Form\Field;
 use Bukubuku\Models\User;
 
-$this->title = 'Create User';
-
+$this->title = 'My Profile';
 $form = new Form('', 'post', $model);
-
 ?>
 
 <h1><?= $this->title ?></h1>
 <?= $form->start(); ?>
+<?= $form->field(Field::NUMBER, 'userId', true); ?>
 <?= $form->field(Field::TEXT, 'firstName'); ?>
 <?= $form->field(Field::TEXT, 'lastName'); ?>
 <?= $form->field(Field::TEXT, 'email'); ?>
-<?= $form->dropdownField('isAdmin', User::getIsAdminDropdown()) ?>
+<?= $form->dropdownField('isAdmin', User::getIsAdminDropdown(), true) ?>
 <?= $form->field(Field::PASSWORD, 'password'); ?>
 <?= $form->field(Field::PASSWORD, 'confirmPassword'); ?>
 <?= $form->button(Button::SUBMIT, 'submit', 'Save') ?>

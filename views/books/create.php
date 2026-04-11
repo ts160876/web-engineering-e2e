@@ -11,7 +11,7 @@ $form = new Form('', 'post', $model);
 
 ?>
 
-<h1>Create Book</h1>
+<h1><?= $this->title ?></h1>
 <?= $form->start(); ?>
 <?= $form->field(Field::TEXT, 'title'); ?>
 <?= $form->field(Field::TEXT, 'author'); ?>

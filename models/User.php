@@ -8,15 +8,14 @@ use Bukubuku\Core\RuleParameter;
 
 class User extends DatabaseModel
 {
-
     public int $userId = 0;
     public string $firstName = '';
     public string $lastName = '';
     public string $email = '';
     public string $password = '';
     public string $confirmPassword = '';
-    //Per default the user is not an admin.
-    //A boolean is treated as TINYINT by MySQL.
+    public string $hashedPassword = '';
+    //And a boolean is treated as TINYINT by MySQL.
     public int $isAdmin = 0;
 
     //Get database table.
@@ -37,7 +36,7 @@ class User extends DatabaseModel
             'first_name' => 'firstName',
             'last_name' => 'lastName',
             'email' => 'email',
-            'pwd' => 'password',
+            'pwd' => 'hashedPassword',
             'is_admin' => 'isAdmin',
         ];
     }
@@ -51,7 +50,7 @@ class User extends DatabaseModel
             'email' => 'E-Mail',
             'password' => 'Password',
             'confirmPassword' => 'Confirm Password',
-            'isAdmin' => 'Is Administrator'
+            'isAdmin' => 'User Role'
         ];
     }
 
@@ -75,7 +74,8 @@ class User extends DatabaseModel
             ],
             'password' => [
                 Rule::REQUIRED => [],
-                Rule::MIN_LENGTH => [RuleParameter::MIN => 10],
+                //To allow easier testing, we allow very short passwords.
+                Rule::MIN_LENGTH => [RuleParameter::MIN => 3],
                 Rule::MAX_LENGTH => [RuleParameter::MAX => 100]
             ],
             'confirmPassword' => [
@@ -85,6 +85,20 @@ class User extends DatabaseModel
         ];
     }
 
+    public function insert(): bool
+    {
+        //We need to hash the password.
+        $this->hashedPassword = password_hash($this->password, PASSWORD_DEFAULT);
+        return parent::insert();
+    }
+
+    public function update(array $properties = []): bool
+    {
+        //We need to hash the password.
+        $this->hashedPassword = password_hash($this->password, PASSWORD_DEFAULT);
+        return parent::update($properties);
+    }
+
     public function register(): bool
     {
         return $this->insert();
@@ -92,7 +106,7 @@ class User extends DatabaseModel
 
     public function checkPassword($password): bool
     {
-        if ($this->password == $password) {
+        if (password_verify($password, $this->hashedPassword)) {
             return true;
         } else {
             return false;
@@ -125,5 +139,19 @@ class User extends DatabaseModel
         } else {
             return false;
         }
+    }
+
+    static public function getIsAdminDropdown(): array
+    {
+        return [
+            0 => 'Customer',
+            1 => 'Administrator'
+        ];
+    }
+
+    static public function getIsAdminText(int $isAdmin): string
+    {
+        $dropdown = static::getIsAdminDropdown();
+        return $dropdown[$isAdmin] ?? $isAdmin;
     }
 }

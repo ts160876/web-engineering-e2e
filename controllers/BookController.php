@@ -5,6 +5,7 @@ namespace Bukubuku\Controllers;
 use Bukubuku\Core\Application;
 use Bukubuku\Core\Controller;
 use Bukubuku\Models\Book;
+use Bukubuku\Models\BookCheckout;
 use Bukubuku\Core\exception\InternalErrorException;
 
 class BookController extends Controller
@@ -110,11 +111,44 @@ class BookController extends Controller
 
     public function checkout(): string
     {
-        return '';
+        if (Application::$app->getFlashMemory(BookCheckout::class) != null) {
+            $bookCheckout = BookCheckout::fromHttp(Application::$app->getFlashMemory(BookCheckout::class));
+        } else {
+            if (Application::$app->isCustomer() == true) {
+                $userId = Application::$app->getUserId();
+                $bookId = Application::$app->request->getParameter('bookId');
+                if ($userId != null && $bookId != null) {
+                    $bookCheckout = BookCheckout::prepareCheckout($userId, $bookId);
+                } else {
+                    throw new InternalErrorException();
+                }
+            } else {
+                throw new InternalErrorException();
+            }
+        }
+        return $this->renderView('books/checkout', ['model' => $bookCheckout]);
     }
 
     public function handleCheckout(): string|null
     {
-        return null;
+        //Get the data from the (POST) request.
+        $bookCheckout = BookCheckOut::fromHttp(
+            ['properties' => Application::$app->request->getParameters()]
+        );
+
+        //Validate the data. We keep this a bit simple here, since all fields are readonly.
+        if ($bookCheckout->checkoutBook() == true) {
+            //Checkout was successful. 
+            Application::$app->setFlashSuccessMessage('You have successfully checked out.');
+            //Redirect to home.
+            Application::$app->response->redirect('/');
+            return null;
+        } else {
+            //Registration as not successful.
+            Application::$app->setFlashErrorMessage('Your checkout failed.');
+            //Redirect to home.
+            Application::$app->response->redirect('/');
+            return null;
+        }
     }
 }

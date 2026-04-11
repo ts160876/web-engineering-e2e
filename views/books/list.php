@@ -6,9 +6,11 @@ use Bukubuku\Models\Book;
 $this->title = 'List Books';
 ?>
 
-<h1>List Books</h1>
+<h1><?= $this->title ?></h1>
 
-<a class="btn btn-primary" href="/web-engineering-e2e/public/index.php/books/create" role="button">Create Book</a>
+<?php if (Application::$app->isAdmin() == true): ?>
+    <a class="btn btn-primary" href="/web-engineering-e2e/public/index.php/books/create" role="button">Create Book</a>
+<?php endif; ?>
 
 <table class="table">
     <thead>
@@ -22,7 +24,6 @@ $this->title = 'List Books';
             <th scope="col">Number of Pages</th>
             <th scope="col">Format</th>
             <th scope="col">Checkout Status</th>
-
         </tr>
     </thead>
     <tbody>
@@ -36,7 +37,12 @@ $this->title = 'List Books';
                 <td><?= $book['published'] ?></td>
                 <td><?= $book['pages'] ?></td>
                 <td><?= Book::getFormatText($book['format']) ?></td>
-                <td><?= Book::getCheckoutStatusText($book['checkoutStatus']) ?></td>
+                <?php if (Application::$app->isCustomer() == true && $book['checkoutStatus'] == 'available'): ?>
+                    <td><a href="/web-engineering-e2e/public/index.php/books/checkout?bookId=<?= $book['bookId'] ?>">
+                            <?= Book::getCheckoutStatusText($book['checkoutStatus']) ?></a></td>
+                <? else: ?>
+                    <td><?= Book::getCheckoutStatusText($book['checkoutStatus']) ?></td>
+                <?php endif; ?>
             </tr>
         <?php endforeach; ?>
     </tbody>

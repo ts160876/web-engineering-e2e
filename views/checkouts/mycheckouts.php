@@ -1,17 +1,10 @@
 <?php
-
-use Bukubuku\Core\Application;
-
-$this->title = 'List Checkouts';
+$this->title = 'My Checkouts';
 $nextPage = (int) $page + 1;
 $previousPage = (int) $page - 1;
 ?>
 
 <h1><?= $this->title ?></h1>
-
-<?php if (Application::$app->isAdmin() == true): ?>
-    <a class="btn btn-primary" href="/web-engineering-e2e/public/index.php/checkouts/create" role="button">Create Checkout</a>
-<?php endif; ?>
 
 <table class="table">
     <thead>
@@ -30,7 +23,12 @@ $previousPage = (int) $page - 1;
                 <td><?= $checkout['userId'] ?></td>
                 <td><?= $checkout['bookId'] ?></td>
                 <td><?= $checkout['startTime'] ?></td>
-                <td><?= $checkout['endTime'] ?></td>
+                <?php if ($checkout['endTime'] == null): ?>
+                    <td><a href="/web-engineering-e2e/public/index.php/checkouts/return?checkoutId=<?= $checkout['checkoutId'] ?>">
+                            <?= 'Return this book' ?></a></td>
+                <? else: ?>
+                    <td><?= $checkout['endTime'] ?></td>
+                <?php endif; ?>
             </tr>
         <?php endforeach; ?>
     </tbody>
@@ -38,7 +36,7 @@ $previousPage = (int) $page - 1;
 
 <nav>
     <ul class="pagination">
-        <li class="page-item"><a class="page-link" href="/web-engineering-e2e/public/index.php/checkouts/page?page=<?= $previousPage ?>">Previous</a></li>
-        <li class="page-item"><a class="page-link" href="/web-engineering-e2e/public/index.php/checkouts/page?page=<?= $nextPage ?>">Next</a></li>
+        <li class="page-item"><a class="page-link" href="/web-engineering-e2e/public/index.php/checkouts/mycheckouts?page=<?= $previousPage ?>">Previous</a></li>
+        <li class="page-item"><a class="page-link" href="/web-engineering-e2e/public/index.php/checkouts/mycheckouts?page=<?= $nextPage ?>">Next</a></li>
     </ul>
 </nav>

@@ -21,7 +21,11 @@ class Field
         $this->type = $type;
         $this->propertyName = $propertyName;
         $this->form = $form;
-        $this->readonly = $readonly;
+        if ($form->readonly == true) {
+            $this->readonly = true;
+        } else {
+            $this->readonly = $readonly;
+        }
     }
 
     //Print the field
@@ -30,8 +34,11 @@ class Field
 
         //Implement special logic for DateTime
         if ($this->form->model->{$this->propertyName} instanceof \DateTime) {
-            //$propertyValue = $this->form->model->{$this->propertyName}->format('Y-m-d');
-            $propertyValue = $this->form->model->{$this->propertyName}->format('Y-m-d H:i:s');
+            if ($this->type == Field::DATE) {
+                $propertyValue = $this->form->model->{$this->propertyName}->format('Y-m-d');
+            } else {
+                $propertyValue = $this->form->model->{$this->propertyName}->format('Y-m-d H:i:s');
+            }
         } else {
             $propertyValue = $this->form->model->{$this->propertyName};
         }

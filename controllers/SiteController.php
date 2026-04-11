@@ -93,11 +93,6 @@ class SiteController extends Controller
         }
     }
 
-    public function profile(): string
-    {
-        return $this->renderView('profile');
-    }
-
     public function handleLogout(): string|null
     {
         //Logout, i.e. remove the user from the session.

@@ -10,7 +10,7 @@ $this->title = 'Registration';
 $form = new Form('', 'post', $model);
 ?>
 
-<h1>Registration</h1>
+<h1><?= $this->title ?></h1>
 <?= $form->start(); ?>
 <?= $form->field(Field::TEXT, 'firstName'); ?>
 <?= $form->field(Field::TEXT, 'lastName'); ?>

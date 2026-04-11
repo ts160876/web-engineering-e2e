@@ -3,14 +3,16 @@
 use Bukubuku\Core\Application;
 use Bukubuku\Models\Book;
 
-$this->title = 'List Books (Paged)';
+$this->title = 'List Books';
 $nextPage = (int) $page + 1;
 $previousPage = (int) $page - 1;
 ?>
 
-<h1>List Books (Paged)</h1>
+<h1><?= $this->title ?></h1>
 
-<a class="btn btn-primary" href="/web-engineering-e2e/public/index.php/books/create" role="button">Create Book</a>
+<?php if (Application::$app->isAdmin() == true): ?>
+    <a class="btn btn-primary" href="/web-engineering-e2e/public/index.php/books/create" role="button">Create Book</a>
+<?php endif; ?>
 
 <table class="table">
     <thead>
@@ -38,7 +40,12 @@ $previousPage = (int) $page - 1;
                 <td><?= $book['published'] ?></td>
                 <td><?= $book['pages'] ?></td>
                 <td><?= Book::getFormatText($book['format']) ?></td>
-                <td><?= Book::getCheckoutStatusText($book['checkoutStatus']) ?></td>
+                <?php if (Application::$app->isCustomer() == true && $book['checkoutStatus'] == 'available'): ?>
+                    <td><a href="/web-engineering-e2e/public/index.php/books/checkout?bookId=<?= $book['bookId'] ?>">
+                            <?= Book::getCheckoutStatusText($book['checkoutStatus']) ?></a></td>
+                <? else: ?>
+                    <td><?= Book::getCheckoutStatusText($book['checkoutStatus']) ?></td>
+                <?php endif; ?>
             </tr>
         <?php endforeach; ?>
     </tbody>

@@ -17,70 +17,106 @@ use Bukubuku\Core\Application;
 
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">Navbar</a>
+            <a class="navbar-brand" href="#">BukuBuku</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <!-- me-auto (margin-end auto) pushes content to the left -->
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="/web-engineering-e2e/public/index.php/">Home</a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Books
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/web-engineering-e2e/public/index.php/books/create">Create Book</a></li>
-                            <li><a class="dropdown-item" href="/web-engineering-e2e/public/index.php/books/list">List Books</a></li>
-                            <li><a class="dropdown-item" href="/web-engineering-e2e/public/index.php/books/page">List Books (Paged)</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Checkouts
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/web-engineering-e2e/public/index.php/checkouts/create">Create Checkout</a></li>
-                            <li><a class="dropdown-item" href="/web-engineering-e2e/public/index.php/checkouts/list">List Checkouts</a></li>
-                            <li><a class="dropdown-item" href="/web-engineering-e2e/public/index.php/checkouts/page">List Checkouts (Paged)</a></li>
+                    <?php if (Application::$app->isAuthorized('/')): ?>
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="<?= Application::$app->pathToUrl('/') ?>">Home</a>
+                        </li>
+                    <?php endif; ?>
 
-                        </ul>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Users
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/web-engineering-e2e/public/index.php/users/create">Create User</a></li>
-                            <li><a class="dropdown-item" href="/web-engineering-e2e/public/index.php/users/list">List Users</a></li>
-                            <li><a class="dropdown-item" href="/web-engineering-e2e/public/index.php/users/page">List Users (Paged)</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="/web-engineering-e2e/public/index.php/contact">Contact</a>
-                    </li>
+                    <?php if (Application::$app->isAuthorized('/books/create') || Application::$app->isAuthorized('/books/page')): ?>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Books
+                            </a>
+                            <ul class="dropdown-menu">
+                                <?php if (Application::$app->isAuthorized('/books/create')): ?>
+                                    <li><a class="dropdown-item" href="<?= Application::$app->pathToUrl('/books/create') ?>">Create Book</a></li>
+                                <?php endif; ?>
+                                <!-- We only display the paged table
+                                <li><a class="dropdown-item" href="/web-engineering-e2e/public/index.php/books/list">List Books</a></li>-->
+                                <?php if (Application::$app->isAuthorized('/books/page')): ?>
+                                    <li><a class="dropdown-item" href="<?= Application::$app->pathToUrl('/books/page') ?>">List Books</a></li>
+                                <?php endif; ?>
+                            </ul>
+                        </li>
+                    <?php endif; ?>
+
+                    <?php if (Application::$app->isAuthorized('/checkouts/create') || Application::$app->isAuthorized('/checkouts/page') || Application::$app->isAuthorized('/checkouts/mycheckouts')): ?>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Checkouts
+                            </a>
+                            <ul class="dropdown-menu">
+                                <?php if (Application::$app->isAuthorized('/checkouts/create')): ?>
+                                    <li><a class="dropdown-item" href="<?= Application::$app->pathToUrl('/checkouts/create') ?>">Create Checkout</a></li>
+                                <?php endif; ?>
+                                <!-- We only display the paged table
+                                <li><a class="dropdown-item" href="/web-engineering-e2e/public/index.php/checkouts/list">List Checkouts</a></li>-->
+                                <?php if (Application::$app->isAuthorized('/checkouts/page')): ?>
+                                    <li><a class="dropdown-item" href="<?= Application::$app->pathToUrl('/checkouts/page') ?>">List Checkouts</a></li>
+                                <?php endif; ?>
+                                <?php if (Application::$app->isAuthorized('/checkouts/mycheckouts')): ?>
+                                    <li><a class="dropdown-item" href="<?= Application::$app->pathToUrl('/checkouts/mycheckouts') ?>">My Checkouts</a></li>
+                                <?php endif; ?>
+                            </ul>
+                        </li>
+                    <?php endif; ?>
+
+                    <?php if (Application::$app->isAuthorized('/users/create') || Application::$app->isAuthorized('/users/page')): ?>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Users
+                            </a>
+                            <ul class="dropdown-menu">
+                                <?php if (Application::$app->isAuthorized('/users/create')): ?>
+                                    <li><a class="dropdown-item" href="<?= Application::$app->pathToUrl('/users/create') ?>">Create User</a></li>
+                                <?php endif; ?>
+                                <!-- We only display the paged table
+                                <li><a class="dropdown-item" href="/web-engineering-e2e/public/index.php/users/list">List Users</a></li>-->
+                                <?php if (Application::$app->isAuthorized('/users/page')): ?>
+                                    <li><a class="dropdown-item" href="<?= Application::$app->pathToUrl('/users/page') ?>">List Users</a></li>
+                                <?php endif; ?>
+                            </ul>
+                        </li>
+                    <?php endif; ?>
+
+                    <?php if (Application::$app->isAuthorized('/contact')): ?>
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="<?= Application::$app->pathToUrl('/contact') ?>">Contact</a>
+                        </li>
+                    <?php endif; ?>
+
                 </ul>
                 <!-- ms-auto (margin-start auto) pushes content to the right -->
-                <!-- Here we need to differentiate whether the user is logged in or not -->
-                <?php if (Application::$app->isGuest()): ?>
+                <?php if (Application::$app->isAuthorized('/registration') || Application::$app->isAuthorized('/login') || Application::$app->isAuthorized('/myprofile') || Application::$app->isAuthorized('/logout')): ?>
                     <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                        <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="/web-engineering-e2e/public/index.php/registration">Registration</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="/web-engineering-e2e/public/index.php/login">Login</a>
-                        </li>
-                    </ul>
-                <?php else: ?>
-                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                        <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="/web-engineering-e2e/public/index.php/profile">Profile</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="/web-engineering-e2e/public/index.php/logout"><?= 'Logout (' . Application::$app->getFullName() . ')' ?></a>
-                        </li>
+                        <?php if (Application::$app->isAuthorized('/registration')): ?>
+                            <li class="nav-item">
+                                <a class="nav-link active" aria-current="page" href="<?= Application::$app->pathToUrl('/registration') ?>">Registration</a>
+                            </li>
+                        <?php endif ?>
+                        <?php if (Application::$app->isAuthorized('/login')): ?>
+                            <li class="nav-item">
+                                <a class="nav-link active" aria-current="page" href="<?= Application::$app->pathToUrl('/login') ?>">Login</a>
+                            </li>
+                        <?php endif ?>
+                        <?php if (Application::$app->isAuthorized('/myprofile')): ?>
+                            <li class="nav-item">
+                                <a class="nav-link active" aria-current="page" href="<?= Application::$app->pathToUrl('/myprofile') ?>">Profile</a>
+                            </li>
+                        <?php endif ?>
+                        <?php if (Application::$app->isAuthorized('/logout')): ?>
+                            <li class="nav-item">
+                                <a class="nav-link active" aria-current="page" href="<?= Application::$app->pathToUrl('/logout') ?>"><?= 'Logout (' . Application::$app->getFullName() . ')' ?></a>
+                            </li>
+                        <?php endif ?>
                     </ul>
                 <?php endif ?>
             </div>

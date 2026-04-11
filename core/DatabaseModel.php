@@ -190,13 +190,16 @@ abstract class DatabaseModel extends Model
     protected function isUnique(string $propertyName): bool
     {
         $tableName = static::getTableName();
+        $primaryKeyName = static::getPrimaryKeyName();
         $columnName = static::propertyToColumn($propertyName);
 
         //Create SQL statement.
-        $query = "SELECT COUNT(*) FROM $tableName WHERE $columnName = :$columnName;";
+        $query = "SELECT COUNT(*) FROM $tableName WHERE $primaryKeyName <> :$primaryKeyName AND $columnName = :$columnName;";
         $statement = static::prepare($query);
 
         //Bind the parameter and execute the statement.
+        $value = $this->{$this->columnToProperty($primaryKeyName)};
+        $statement->bindValue(":$primaryKeyName", $value);
         $value = $this->{$propertyName};
         $statement->bindValue(":$columnName", $value);
         $statement->execute();

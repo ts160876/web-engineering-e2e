@@ -1,12 +1,18 @@
 <?php
-$this->title = 'List Users (Paged)';
+
+use Bukubuku\Core\Application;
+use Bukubuku\Models\User;
+
+$this->title = 'List Users';
 $nextPage = (int) $page + 1;
 $previousPage = (int) $page - 1;
 ?>
 
-<h1>List Users (Paged)</h1>
+<h1><?= $this->title ?></h1>
 
-<a class="btn btn-primary" href="/web-engineering-e2e/public/index.php/users/create" role="button">Create User</a>
+<?php if (Application::$app->isAdmin() == true): ?>
+    <a class="btn btn-primary" href="/web-engineering-e2e/public/index.php/users/create" role="button">Create User</a>
+<?php endif; ?>
 
 <table class="table">
     <thead>
@@ -15,19 +21,17 @@ $previousPage = (int) $page - 1;
             <th scope="col">First Name</th>
             <th scope="col">Last Name</th>
             <th scope="col">E-Mail</th>
-            <th scope="col">Password</th>
-            <th scope="col">Is Administrator</th>
+            <th scope="col">User Role</th>
         </tr>
     </thead>
     <tbody>
         <?php foreach ($users as $user): ?>
             <tr>
-                <td><a href="/web-engineering-e2e/public/index.php/users/display?userId=<?= $user['userId'] ?>"><?= $user['userId'] ?></a></td>
+                <td><a href="/web-engineering-e2e/public/index.php/users/edit?userId=<?= $user['userId'] ?>"><?= $user['userId'] ?></a></td>
                 <td><?= $user['firstName'] ?></td>
                 <td><?= $user['lastName'] ?></td>
                 <td><?= $user['email'] ?></td>
-                <td><?= $user['password'] ?></td>
-                <td><?= $user['isAdmin'] ?></td>
+                <td><?= User::getIsAdminText($user['isAdmin']) ?></td>
             </tr>
         <?php endforeach; ?>
     </tbody>
