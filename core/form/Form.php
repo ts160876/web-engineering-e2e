@@ -46,7 +46,7 @@ class Form
     //Print the start tag of the form.
     public function start(): string
     {
-        return sprintf('<form action="%s" method="%s">', $this->action, $this->method) . PHP_EOL;
+        return sprintf('<form action="%s" method="%s">', htmlspecialchars($this->action), htmlspecialchars($this->method)) . PHP_EOL;
     }
 
     //Print the end tag of the form.

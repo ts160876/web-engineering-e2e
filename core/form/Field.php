@@ -62,16 +62,16 @@ class Field
                 %s
               </div>
             </div>',
-            $this->propertyName,
-            $this->form->model->getLabel($this->propertyName),
-            $this->type,
-            $this->propertyName,
-            $this->propertyName,
-            $propertyValue,
-            $this->readonly ? 'readonly' : '',
-            $this->readonly ? 'bg-light' : '',
-            $this->form->model->hasError($this->propertyName) ? ' is-invalid' : '',
-            $this->form->model->getFirstError($this->propertyName)
+            htmlspecialchars($this->propertyName),
+            htmlspecialchars($this->form->model->getLabel($this->propertyName)),
+            htmlspecialchars($this->type),
+            htmlspecialchars($this->propertyName),
+            htmlspecialchars($this->propertyName),
+            htmlspecialchars($propertyValue),
+            htmlspecialchars($this->readonly ? 'readonly' : ''),
+            htmlspecialchars($this->readonly ? 'bg-light' : ''),
+            htmlspecialchars($this->form->model->hasError($this->propertyName) ? ' is-invalid' : ''),
+            htmlspecialchars($this->form->model->getFirstError($this->propertyName))
         );
     }
 }

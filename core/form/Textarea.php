@@ -38,15 +38,15 @@ class Textarea
                 %s
               </div>
             </div>',
-            $this->propertyName,
-            $this->form->model->getLabel($this->propertyName),
-            $this->propertyName,
-            $this->propertyName,
-            $this->readonly ? 'readonly' : '',
-            $this->readonly ? 'bg-light' : '',
-            $this->form->model->hasError($this->propertyName) ? ' is-invalid' : '',
-            $this->form->model->{$this->propertyName},
-            $this->form->model->getFirstError($this->propertyName)
+            htmlspecialchars($this->propertyName),
+            htmlspecialchars($this->form->model->getLabel($this->propertyName)),
+            htmlspecialchars($this->propertyName),
+            htmlspecialchars($this->propertyName),
+            htmlspecialchars($this->readonly ? 'readonly' : ''),
+            htmlspecialchars($this->readonly ? 'bg-light' : ''),
+            htmlspecialchars($this->form->model->hasError($this->propertyName) ? ' is-invalid' : ''),
+            htmlspecialchars($this->form->model->{$this->propertyName}),
+            htmlspecialchars($this->form->model->getFirstError($this->propertyName))
         );
     }
 }

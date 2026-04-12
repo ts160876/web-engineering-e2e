@@ -77,4 +77,19 @@ class Session
     {
         unset($_SESSION[$key]);
     }
+
+    //Login the user.
+    public function login(int $userId)
+    {
+        $this->set('userId', $userId);
+        session_regenerate_id(true);
+    }
+
+    //Logout the user.
+    public function logout()
+    {
+        $this->unset('userId');
+        session_destroy();
+        session_start();
+    }
 }

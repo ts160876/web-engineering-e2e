@@ -13,7 +13,7 @@ $this->title = 'Checkout Book';
 $form = new Form('', 'post', $model);
 ?>
 
-<h1><?= $this->title ?></h1>
+<h1><?= htmlspecialchars($this->title) ?></h1>
 <?= $form->start(); ?>
 <?= $form->field(Field::NUMBER, 'userId', true); ?>
 <?= $form->field(Field::TEXT, 'firstName', true); ?>

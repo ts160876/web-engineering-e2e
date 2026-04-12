@@ -55,13 +55,13 @@ class Application
     //Login the user.
     public function login(int $userId)
     {
-        $this->session->set('userId', $userId);
+        $this->session->login($userId);
     }
 
     //Logout the user.
     public function logout()
     {
-        $this->session->unset('userId');
+        $this->session->logout();
     }
 
     //Get the ID of the (logged in) user.

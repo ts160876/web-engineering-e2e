@@ -12,7 +12,7 @@ $nextPage = (int) $page + 1;
 $previousPage = (int) $page - 1;
 ?>
 
-<h1><?= $this->title ?></h1>
+<h1><?= htmlspecialchars($this->title) ?></h1>
 
 <?php if (Application::$app->isAdmin() == true): ?>
     <a class="btn btn-primary" href="/web-engineering-e2e/public/index.php/users/create" role="button">Create User</a>
@@ -31,11 +31,11 @@ $previousPage = (int) $page - 1;
     <tbody>
         <?php foreach ($users as $user): ?>
             <tr>
-                <td><a href="/web-engineering-e2e/public/index.php/users/edit?userId=<?= $user['userId'] ?>"><?= $user['userId'] ?></a></td>
-                <td><?= $user['firstName'] ?></td>
-                <td><?= $user['lastName'] ?></td>
-                <td><?= $user['email'] ?></td>
-                <td><?= User::getIsAdminText($user['isAdmin']) ?></td>
+                <td><a href="/web-engineering-e2e/public/index.php/users/edit?userId=<?= htmlspecialchars($user['userId']) ?>"><?= htmlspecialchars($user['userId']) ?></a></td>
+                <td><?= htmlspecialchars($user['firstName']) ?></td>
+                <td><?= htmlspecialchars($user['lastName']) ?></td>
+                <td><?= htmlspecialchars($user['email']) ?></td>
+                <td><?= htmlspecialchars(User::getIsAdminText($user['isAdmin'])) ?></td>
             </tr>
         <?php endforeach; ?>
     </tbody>
@@ -43,7 +43,7 @@ $previousPage = (int) $page - 1;
 
 <nav>
     <ul class="pagination">
-        <li class="page-item"><a class="page-link" href="/web-engineering-e2e/public/index.php/users/page?page=<?= $previousPage ?>">Previous</a></li>
-        <li class="page-item"><a class="page-link" href="/web-engineering-e2e/public/index.php/users/page?page=<?= $nextPage ?>">Next</a></li>
+        <li class="page-item"><a class="page-link" href="/web-engineering-e2e/public/index.php/users/page?page=<?= htmlspecialchars($previousPage) ?>">Previous</a></li>
+        <li class="page-item"><a class="page-link" href="/web-engineering-e2e/public/index.php/users/page?page=<?= htmlspecialchars($nextPage) ?>">Next</a></li>
     </ul>
 </nav>

@@ -12,7 +12,7 @@ $this->title = 'Registration';
 $form = new Form('', 'post', $model);
 ?>
 
-<h1><?= $this->title ?></h1>
+<h1><?= htmlspecialchars($this->title) ?></h1>
 <?= $form->start(); ?>
 <?= $form->field(Field::TEXT, 'firstName'); ?>
 <?= $form->field(Field::TEXT, 'lastName'); ?>

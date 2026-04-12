@@ -10,7 +10,7 @@ use Bukubuku\Models\User;
 $this->title = 'List Users';
 ?>
 
-<h1><?= $this->title ?></h1>
+<h1><?= htmlspecialchars($this->title) ?></h1>
 
 <?php if (Application::$app->isAdmin() == true): ?>
     <a class="btn btn-primary" href="/web-engineering-e2e/public/index.php/users/create" role="button">Create User</a>
@@ -29,11 +29,11 @@ $this->title = 'List Users';
     <tbody>
         <?php foreach ($users as $user): ?>
             <tr>
-                <td><a href="/web-engineering-e2e/public/index.php/users/edit?userId=<?= $user['userId'] ?>"><?= $user['userId'] ?></a></td>
-                <td><?= $user['firstName'] ?></td>
-                <td><?= $user['lastName'] ?></td>
-                <td><?= $user['email'] ?></td>
-                <td><?= User::getIsAdminText($user['isAdmin']) ?></td>
+                <td><a href="/web-engineering-e2e/public/index.php/users/edit?userId=<?= htmlspecialchars($user['userId']) ?>"><?= htmlspecialchars($user['userId']) ?></a></td>
+                <td><?= htmlspecialchars($user['firstName']) ?></td>
+                <td><?= htmlspecialchars($user['lastName']) ?></td>
+                <td><?= htmlspecialchars($user['email']) ?></td>
+                <td><?= htmlspecialchars(User::getIsAdminText($user['isAdmin'])) ?></td>
             </tr>
         <?php endforeach; ?>
     </tbody>

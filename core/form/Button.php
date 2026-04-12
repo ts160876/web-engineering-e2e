@@ -39,11 +39,11 @@ class Button
     {
         return sprintf(
             '<button type="%s" id="%s" name="%s" %s class="btn btn-primary">%s</button>',
-            $this->type,
-            $this->buttonName,
-            $this->buttonName,
-            $this->readonly ? 'disabled' : '',
-            $this->buttonText
+            htmlspecialchars($this->type),
+            htmlspecialchars($this->buttonName),
+            htmlspecialchars($this->buttonName),
+            htmlspecialchars($this->readonly ? 'disabled' : ''),
+            htmlspecialchars($this->buttonText)
         );
     }
 }

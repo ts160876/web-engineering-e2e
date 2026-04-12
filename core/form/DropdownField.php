@@ -53,16 +53,16 @@ class DropdownField
                 %s
               </div>
             </div>',
-            $this->propertyName,
-            $this->form->model->getLabel($this->propertyName),
-            $this->propertyName,
-            $this->propertyName,
+            htmlspecialchars($this->propertyName),
+            htmlspecialchars($this->form->model->getLabel($this->propertyName)),
+            htmlspecialchars($this->propertyName),
+            htmlspecialchars($this->propertyName),
             /*We assume that the value of a disabled dropdown field is not needed.
             That will not necessarily hold true in productive environments.*/
-            $this->readonly ? 'disabled' : '',
-            $this->form->model->hasError($this->propertyName) ? ' is-invalid' : '',
-            $optionString,
-            $this->form->model->getFirstError($this->propertyName)
+            htmlspecialchars($this->readonly ? 'disabled' : ''),
+            htmlspecialchars($this->form->model->hasError($this->propertyName) ? ' is-invalid' : ''),
+            htmlspecialchars($optionString),
+            htmlspecialchars($this->form->model->getFirstError($this->propertyName))
         );
     }
 }

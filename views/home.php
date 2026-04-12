@@ -7,7 +7,7 @@
 $this->title = 'Welcome to ' . $name;
 ?>
 
-<h1><?= $this->title ?></h1>
+<h1><?= htmlspecialchars($this->title) ?></h1>
 
 <p>Buku Buku is more than just an online library - it's a modern reading experience designed for today’s digital lifestyle.
     With a single subscription, you get unlimited access to a vast collection of e-books and audiobooks across all genres, ready to enjoy

@@ -19,7 +19,7 @@ if (Application::$app->isAdmin() == true) {
 $form = new Form('', 'post', $model, $readonly);
 ?>
 
-<h1><?= $this->title ?></h1>
+<h1><?= htmlspecialchars($this->title) ?></h1>
 <?= $form->start(); ?>
 <?= $form->field(Field::NUMBER, 'checkoutId', true); ?>
 <?= $form->field(Field::NUMBER, 'userId'); ?>

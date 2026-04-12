@@ -20,7 +20,7 @@ if (Application::$app->isAdmin() == true) {
 $form = new Form('', 'post', $model, $readonly);
 ?>
 
-<h1><?= $this->title ?></h1>
+<h1><?= htmlspecialchars($this->title) ?></h1>
 <?= $form->start(); ?>
 <?= $form->field(Field::NUMBER, 'bookId', true); ?>
 <?= $form->field(Field::TEXT, 'title'); ?>

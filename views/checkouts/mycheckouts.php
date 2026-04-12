@@ -9,7 +9,7 @@ $nextPage = (int) $page + 1;
 $previousPage = (int) $page - 1;
 ?>
 
-<h1><?= $this->title ?></h1>
+<h1><?= htmlspecialchars($this->title) ?></h1>
 
 <table class="table">
     <thead>
@@ -24,15 +24,15 @@ $previousPage = (int) $page - 1;
     <tbody>
         <?php foreach ($checkouts as $checkout): ?>
             <tr>
-                <td><a href="/web-engineering-e2e/public/index.php/checkouts/edit?checkoutId=<?= $checkout['checkoutId'] ?>"><?= $checkout['checkoutId'] ?></a></td>
-                <td><?= $checkout['userId'] ?></td>
-                <td><?= $checkout['bookId'] ?></td>
-                <td><?= $checkout['startTime'] ?></td>
+                <td><a href="/web-engineering-e2e/public/index.php/checkouts/edit?checkoutId=<?= htmlspecialchars($checkout['checkoutId']) ?>"><?= htmlspecialchars($checkout['checkoutId']) ?></a></td>
+                <td><?= htmlspecialchars($checkout['userId']) ?></td>
+                <td><?= htmlspecialchars($checkout['bookId']) ?></td>
+                <td><?= htmlspecialchars($checkout['startTime']) ?></td>
                 <?php if ($checkout['endTime'] == null): ?>
-                    <td><a href="/web-engineering-e2e/public/index.php/checkouts/return?checkoutId=<?= $checkout['checkoutId'] ?>">
+                    <td><a href="/web-engineering-e2e/public/index.php/checkouts/return?checkoutId=<?= htmlspecialchars($checkout['checkoutId']) ?>">
                             <?= 'Return this book' ?></a></td>
                 <? else: ?>
-                    <td><?= $checkout['endTime'] ?></td>
+                    <td><?= htmlspecialchars($checkout['endTime']) ?></td>
                 <?php endif; ?>
             </tr>
         <?php endforeach; ?>
@@ -41,7 +41,7 @@ $previousPage = (int) $page - 1;
 
 <nav>
     <ul class="pagination">
-        <li class="page-item"><a class="page-link" href="/web-engineering-e2e/public/index.php/checkouts/mycheckouts?page=<?= $previousPage ?>">Previous</a></li>
-        <li class="page-item"><a class="page-link" href="/web-engineering-e2e/public/index.php/checkouts/mycheckouts?page=<?= $nextPage ?>">Next</a></li>
+        <li class="page-item"><a class="page-link" href="/web-engineering-e2e/public/index.php/checkouts/mycheckouts?page=<?= htmlspecialchars($previousPage) ?>">Previous</a></li>
+        <li class="page-item"><a class="page-link" href="/web-engineering-e2e/public/index.php/checkouts/mycheckouts?page=<?= htmlspecialchars($nextPage) ?>">Next</a></li>
     </ul>
 </nav>

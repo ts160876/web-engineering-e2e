@@ -12,7 +12,7 @@ $this->title = 'Create Checkout';
 $form = new Form('', 'post', $model);
 ?>
 
-<h1><?= $this->title ?></h1>
+<h1><?= htmlspecialchars($this->title) ?></h1>
 <?= $form->start(); ?>
 <?= $form->field(Field::NUMBER, 'userId'); ?>
 <?= $form->field(Field::NUMBER, 'bookId'); ?>

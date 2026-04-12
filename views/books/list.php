@@ -10,7 +10,7 @@ use Bukubuku\Models\Book;
 $this->title = 'List Books';
 ?>
 
-<h1><?= $this->title ?></h1>
+<h1><?= htmlspecialchars($this->title) ?></h1>
 
 <?php if (Application::$app->isAdmin() == true): ?>
     <a class="btn btn-primary" href="/web-engineering-e2e/public/index.php/books/create" role="button">Create Book</a>
@@ -33,19 +33,19 @@ $this->title = 'List Books';
     <tbody>
         <?php foreach ($books as $book): ?>
             <tr>
-                <td><a href="/web-engineering-e2e/public/index.php/books/edit?bookId=<?= $book['bookId'] ?>"><?= $book['bookId'] ?></a></td>
-                <td><img src="<?= Application::$app->getCoverPath($book['isbn']) ?>" alt="<?= $book['isbn'] ?>" height="100"></td>
-                <td><?= $book['title'] ?></td>
-                <td><?= $book['author'] ?></td>
-                <td><?= $book['isbn'] ?></td>
-                <td><?= $book['published'] ?></td>
-                <td><?= $book['pages'] ?></td>
-                <td><?= Book::getFormatText($book['format']) ?></td>
+                <td><a href="/web-engineering-e2e/public/index.php/books/edit?bookId=<?= htmlspecialchars($book['bookId']) ?>"><?= htmlspecialchars($book['bookId']) ?></a></td>
+                <td><img src="<?= htmlspecialchars(Application::$app->getCoverPath($book['isbn'])) ?>" alt="<?= htmlspecialchars($book['isbn']) ?>" height="100"></td>
+                <td><?= htmlspecialchars($book['title']) ?></td>
+                <td><?= htmlspecialchars($book['author']) ?></td>
+                <td><?= htmlspecialchars($book['isbn']) ?></td>
+                <td><?= htmlspecialchars($book['published']) ?></td>
+                <td><?= htmlspecialchars($book['pages']) ?></td>
+                <td><?= htmlspecialchars(Book::getFormatText($book['format'])) ?></td>
                 <?php if (Application::$app->isCustomer() == true && $book['checkoutStatus'] == 'available'): ?>
-                    <td><a href="/web-engineering-e2e/public/index.php/books/checkout?bookId=<?= $book['bookId'] ?>">
-                            <?= Book::getCheckoutStatusText($book['checkoutStatus']) ?></a></td>
+                    <td><a href="/web-engineering-e2e/public/index.php/books/checkout?bookId=<?= htmlspecialchars($book['bookId']) ?>">
+                            <?= htmlspecialchars(Book::getCheckoutStatusText($book['checkoutStatus'])) ?></a></td>
                 <? else: ?>
-                    <td><?= Book::getCheckoutStatusText($book['checkoutStatus']) ?></td>
+                    <td><?= htmlspecialchars(Book::getCheckoutStatusText($book['checkoutStatus'])) ?></td>
                 <?php endif; ?>
             </tr>
         <?php endforeach; ?>
