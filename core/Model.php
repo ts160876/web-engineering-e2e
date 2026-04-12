@@ -20,7 +20,7 @@ abstract class Model
     static abstract protected function getRulesets(): array;
     /*Remark: the isUnique method should better reside in the the DatabaseModel class.
     Only there it makes sense.*/
-    abstract protected function isUnique(string $property): bool;
+    //abstract protected function isUnique(string $property): bool;
     static abstract protected function propertyMapping(): array;
 
     //Get all properties.
@@ -102,11 +102,11 @@ abstract class Model
                             $this->addError($property, $this->getLabel($property), Rule::MAX_LENGTH, $parameters);
                         }
                         break;
-                    case Rule::UNIQUE:
-                        if ($this->isUnique($property) != true) {
-                            $this->addError($property, $this->getLabel($property), Rule::UNIQUE, $parameters);
-                        }
-                        break;
+                    //case Rule::UNIQUE:
+                    //if ($this->isUnique($property) != true) {
+                    //    $this->addError($property, $this->getLabel($property), Rule::UNIQUE, $parameters);
+                    //}
+                    //break;
                     case Rule::EXISTS:
                         $exists = call_user_func([$parameters[RuleParameter::CLASSNAME], 'checkExistence'], $value);
                         if ($exists != true) {
@@ -182,7 +182,7 @@ abstract class Model
     }
 
     //Add an error to the model.
-    private function addError(string $propertyName, string $propertyLabel, string $ruleName, array $parameters)
+    protected function addError(string $propertyName, string $propertyLabel, string $ruleName, array $parameters)
     {
         $this->errors[$propertyName][] = Rule::constructErrorMessage($propertyName, $propertyLabel, $ruleName, $parameters);
     }

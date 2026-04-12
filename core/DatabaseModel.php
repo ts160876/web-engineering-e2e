@@ -17,7 +17,7 @@ abstract class DatabaseModel extends Model
     - getTableName: get the name of the database table used to store data from this model
     - getPrimaryKeyName: get the name of the primary key column (currently only a single column 
       can be used as primary key)
-      columnMapping: map the column=>property */
+    - columnMapping: map the column=>property*/
     static abstract protected function getTableName(): string;
     static abstract protected function getPrimaryKeyName(): string;
     static abstract protected function columnMapping(): array;
@@ -221,5 +221,31 @@ abstract class DatabaseModel extends Model
         $statement->bindValue(":$columnName", $value);
         $statement->execute();
         return !$statement->fetchColumn();
+    }
+
+    //Validate the data currently in the model.
+    public function validateData(): bool
+    {
+        //First call the validations implemented in the Model class.
+        parent::validateData();
+
+        $rulesets = static::getRulesets();
+
+        foreach ($rulesets as $property => $rules) {
+            //Remark: Currently this variable is not needed in the DatabaseModel class.
+            //$value = $this->{$property};
+            foreach ($rules as $ruleName => $parameters) {
+                switch ($ruleName) {
+                    case Rule::UNIQUE:
+                        if ($this->isUnique($property) != true) {
+                            $this->addError($property, $this->getLabel($property), Rule::UNIQUE, $parameters);
+                        }
+                        break;
+                }
+            }
+        }
+
+        //Check if errors exist.
+        return !$this->hasError();
     }
 }

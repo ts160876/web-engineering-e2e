@@ -34,11 +34,12 @@ class Login extends Model
         ];
     }
 
+    //Remark: moved implementation to DatabaseModel
     //Pseudo implementation.
-    protected function isUnique(string $property): bool
-    {
-        return true;
-    }
+    //protected function isUnique(string $property): bool
+    //{
+    //    return true;
+    //}
 
     //Get the mapping property=>label.
     static protected function propertyMapping(): array
