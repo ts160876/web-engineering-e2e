@@ -1,13 +1,15 @@
 <?php
 
-//Import the classes.
+/**
+ * Lecture Web Engineering
+ */
 
+//Import the classes.
 use Bukubuku\Core\Application;
 use Bukubuku\Controllers\BookController;
 use Bukubuku\Controllers\SiteController;
 use Bukubuku\Controllers\UserController;
 use Bukubuku\Controllers\CheckoutController;
-
 
 //Ensure that errors are propagated to help with troubleshooting.
 ini_set('display_errors', 1);
@@ -21,8 +23,9 @@ require_once __DIR__ . '/../vendor/autoload.php';
 $dotenv = Dotenv\Dotenv::createImmutable(dirname(__DIR__));
 $dotenv->load();
 
-//Authorizations
+//Specify authorizations.
 $authorizations = [
+    //Administrator
     'admin' => [
         '/',
         '/logout',
@@ -44,6 +47,7 @@ $authorizations = [
         '/users/create',
 
     ],
+    //Customer
     'customer' => [
         '/',
         '/contact',
@@ -60,6 +64,7 @@ $authorizations = [
         '/checkouts/return'
 
     ],
+    //Guest
     'guest' => [
         '/',
         '/contact',

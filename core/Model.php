@@ -1,32 +1,42 @@
 <?php
 
+/**
+ * Lecture Web Engineering
+ */
+
 namespace Bukubuku\Core;
 
+/**
+ * The class Model represents a model. It cannot be instantiated.
+ * All concrete models can be found in the /models folder.
+ */
 abstract class Model
 {
-
-    //The following abstract methods have to be implemented in subclasses.
-    //Get the mapping property=>label.
-    abstract static protected function propertyMapping(): array;
-    //Get the rulesets. 
-    abstract static protected function getRulesets(): array;
-    //Check if property is unique. 
+    /*The following abstract methods have to be implemented in subclasses. 
+    They include model-related information:
+    - getRulesets: get the rule sets required to validate the model
+    - isUnique: check if property is unique
+    - propertyMapping: map the property=>label*/
+    static abstract protected function getRulesets(): array;
+    /*Remark: the isUnique method should better reside in the the DatabaseModel class.
+    Only there it makes sense.*/
     abstract protected function isUnique(string $property): bool;
+    static abstract protected function propertyMapping(): array;
 
     //Get all properties.
-    public static function getPropertyNames(): array
+    static public function getPropertyNames(): array
     {
         return array_keys(static::propertyMapping());
     }
 
     //Get the label of a property.
-    public static function getLabel($property): string
+    static public function getLabel($property): string
     {
         return static::propertyMapping()[$property] ?? $property;
     }
 
     //Load parameters (from HTML form or session) into model.
-    public static function fromHttp(array $data)
+    static public function fromHttp(array $data)
     {
         return new static($data['properties'] ?? [], $data['errors'] ?? []);
     }
@@ -34,7 +44,7 @@ abstract class Model
     //Errors collected during validation
     private array $errors = [];
 
-    //Create object (only called via factory methods, hence private).
+    //Create object (only called via factory methods, hence protected).
     protected function __construct(array $properties = [], array $errors = [])
     {
         //Iterate over all parameters and split them into the name and value of the property.
@@ -42,7 +52,7 @@ abstract class Model
             //If a property with the name exists, then we set the value of this property.
             //Otherwise we ignore this parameter.
             if (property_exists($this, $propertyName)) {
-                //Implement special logic for DateTime
+                //Implement special logic for DateTime.
                 if ($this->{$propertyName} instanceof \DateTime || $this->{$propertyName} === null) {
                     if ($propertyValue instanceof \DateTime) {
                         $this->{$propertyName} = $propertyValue;
@@ -67,10 +77,10 @@ abstract class Model
         //Reset the error messages at the beginning of the validation.
         $this->errors = [];
 
-        //The rulesets are stored as an associative array where the key is the name of the property to be validated.
-        //The value are the rules. The rules are again an associative array.
-        //For each rule the key stores the name of the rule. 
-        //For each rule the value stores the parameters if applicable (i.e., can be an empty array).
+        /*The rulesets are stored as an associative array where the key is the name of the property to be validated.
+          The value stores the rules. The rules are again an associative array.
+          For each rule the key stores the name of the rule. 
+          For each rule the value stores the parameters if applicable (i.e., can be an empty array).*/
         $rulesets = static::getRulesets();
 
         foreach ($rulesets as $property => $rules) {
@@ -134,7 +144,7 @@ abstract class Model
         return !$this->hasError();
     }
 
-    //Get the data to sore in session context. 
+    //Get the data to store in session context. 
     public function toHttp(): array
     {
 
@@ -149,12 +159,6 @@ abstract class Model
             'properties' => $properties,
             'errors' => $this->errors
         ];
-    }
-
-    //Add an error to the model.
-    private function addError(string $propertyName, string $propertyLabel, string $ruleName, array $parameters)
-    {
-        $this->errors[$propertyName][] = Rule::constructErrorMessage($propertyName, $propertyLabel, $ruleName, $parameters);
     }
 
     //Check if an error exists (for a given property).
@@ -175,5 +179,11 @@ abstract class Model
     public function getFirstError(string $property): string
     {
         return  $this->errors[$property][0] ?? '';
+    }
+
+    //Add an error to the model.
+    private function addError(string $propertyName, string $propertyLabel, string $ruleName, array $parameters)
+    {
+        $this->errors[$propertyName][] = Rule::constructErrorMessage($propertyName, $propertyLabel, $ruleName, $parameters);
     }
 }

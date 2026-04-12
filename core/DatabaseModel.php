@@ -1,26 +1,45 @@
 <?php
 
+/**
+ * Lecture Web Engineering
+ */
+
 namespace Bukubuku\Core;
 
+/**
+ * The class DatabaseModel represents a database model. It cannot be instantiated.
+ * All concrete database models can be found in the /models folder.
+ */
 abstract class DatabaseModel extends Model
 {
-    //The following abstract methods have to be implemented in subclasses.
-    //They include database-related information.
-    //Get database table.
-    abstract static protected function getTableName(): string;
-    //Get the primary key of the database table (assumption: one column).
-    abstract static protected function getPrimaryKeyName(): string;
-    //Get the mapping column=>property.
-    abstract static protected function columnMapping(): array;
+    /*The following abstract methods have to be implemented in subclasses. 
+    They include database-related information:
+    - getTableName: get the name of the database table used to store data from this model
+    - getPrimaryKeyName: get the name of the primary key column (currently only a single column 
+      can be used as primary key)
+      columnMapping: map the column=>property */
+    static abstract protected function getTableName(): string;
+    static abstract protected function getPrimaryKeyName(): string;
+    static abstract protected function columnMapping(): array;
 
-    //Get all columns of the database table.
-    public static function getColumnNames(): array
+    //Check if a record with a given primary key value does already exist.
+    static public function checkExistence(int $primaryKeyValue): bool
     {
-        return array_keys(static::columnMapping());
+        $tableName = static::getTableName();
+        $primaryKeyName = static::getPrimaryKeyName();
+
+        //Create SQL statement.
+        $query = "SELECT COUNT(*) FROM $tableName WHERE $primaryKeyName = :$primaryKeyName;";
+        $statement = static::prepare($query);
+
+        //Bind the parameter and execute the statement.
+        $statement->bindValue(":$primaryKeyName", $primaryKeyValue);
+        $statement->execute();
+        return $statement->fetchColumn();
     }
 
     //Determine the property for a given column.
-    public static function columnToProperty(string $column): string|null
+    static public function columnToProperty(string $column): string|null
     {
         if (array_key_exists($column, static::columnMapping())) {
             return static::columnMapping()[$column];
@@ -29,25 +48,8 @@ abstract class DatabaseModel extends Model
         }
     }
 
-    //Determine the column for a given property.
-    public static function propertyToColumn(string $property): string|null
-    {
-        $column = array_search($property, static::columnMapping());
-        if ($column != false) {
-            return $column;
-        } else {
-            return null;
-        }
-    }
-
-    //Prepare SQL statement.
-    public static function prepare($query)
-    {
-        return Application::$app->db->pdo->prepare($query);
-    }
-
-    //Load parameters (from HTML form or session) into model.
-    public static function fromDatabase($primaryKeyValue)
+    //Create a new instance of the model by reading the database.
+    static public function fromDatabase($primaryKeyValue)
     {
         $tableName = static::getTableName();
         $columnNames = static::getColumnNames();
@@ -57,21 +59,16 @@ abstract class DatabaseModel extends Model
         //Create SQL statement.
         $query = 'SELECT ' . implode(', ', $columnsWithAlias)  . ' FROM ' . $tableName . ' WHERE ' . $primaryKeyName . '= :' . $primaryKeyName . ';';
         $statement = static::prepare($query);
+
+        //Execute the statement.
         $statement->execute([$primaryKeyName => $primaryKeyValue]);
         $properties = $statement->fetchAll()[0];
 
         return new static($properties);
     }
 
-    //Add an alias to column.
-    public static function addAlias(string $column): string
-    {
-        $alias = static::columnToProperty($column);
-        return "$column AS $alias";
-    }
-
-    //Read all records from the database
-    public static function getAll(int $page = 0, int $limit = 10): array
+    //Read all records from the database. The function supports paging.
+    static public function getAll(int $page = 0, int $limit = 10): array
     {
         $tableName = static::getTableName();
         $columnNames = static::getColumnNames();
@@ -87,30 +84,49 @@ abstract class DatabaseModel extends Model
         }
 
         $statement = static::prepare($query);
+
+        //Bind the parameters.
         if ($page != 0) {
             $statement->bindValue(':limit', $limit, \PDO::PARAM_INT);
             $statement->bindValue(':offset', $offset, \PDO::PARAM_INT);
         }
-        $statement->execute();
 
+        //Execute the statement.
+        $statement->execute();
         return $statement->fetchAll();
     }
 
-    public static function checkExistence(int $primaryKeyValue): bool
+    //Get all columns of the database table.
+    static public function getColumnNames(): array
     {
-        $tableName = static::getTableName();
-        $primaryKeyName = static::getPrimaryKeyName();
-
-        //Create SQL statement.
-        $query = "SELECT COUNT(*) FROM $tableName WHERE $primaryKeyName = :$primaryKeyName;";
-        $statement = static::prepare($query);
-
-        //Bind the parameter and execute the statement.
-        $statement->bindValue(":$primaryKeyName", $primaryKeyValue);
-        $statement->execute();
-        return $statement->fetchColumn();
+        return array_keys(static::columnMapping());
     }
 
+    //Prepare SQL statement.
+    static public function prepare($query)
+    {
+        return Application::$app->db->prepare($query);
+    }
+
+    //Determine the column for a given property.
+    static public function propertyToColumn(string $property): string|null
+    {
+        $column = array_search($property, static::columnMapping());
+        if ($column != false) {
+            return $column;
+        } else {
+            return null;
+        }
+    }
+
+    //Add an alias to column.
+    static protected function addAlias(string $column): string
+    {
+        $alias = static::columnToProperty($column);
+        return "$column AS $alias";
+    }
+
+    //Insert the instance of the model into the database.
     public function insert(): bool
     {
         $tableName = static::getTableName();
@@ -143,6 +159,7 @@ abstract class DatabaseModel extends Model
         return true;
     }
 
+    //Update the instance of the model in the database.
     public function update(array $properties = []): bool
     {
         $tableName = static::getTableName();
@@ -172,7 +189,6 @@ abstract class DatabaseModel extends Model
                 $value = $this->{$propertyName};
                 //Implement special logic for DateTime
                 if ($value instanceof \DateTime) {
-                    //$value = $value->format('Y-m-d');
                     $value = $value->format('Y-m-d H:i:s');
                 }
             } else {
@@ -187,6 +203,7 @@ abstract class DatabaseModel extends Model
         return true;
     }
 
+    //Check if the value of a the given property is unique and does not already exist in the database.
     protected function isUnique(string $propertyName): bool
     {
         $tableName = static::getTableName();

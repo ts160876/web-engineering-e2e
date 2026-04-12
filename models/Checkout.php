@@ -1,14 +1,21 @@
 <?php
 
+/**
+ * Lecture Web Engineering
+ */
+
 namespace Bukubuku\Models;
 
 use Bukubuku\Core\DatabaseModel;
 use Bukubuku\Core\Rule;
 use Bukubuku\Core\RuleParameter;
 
+/**
+ * Implements the model for the checkout.
+ */
 class Checkout extends DatabaseModel
 {
-
+    //Properties of the model
     public int $checkoutId = 0;
     public int $userId = 0;
     public int $bookId = 0;
@@ -20,11 +27,13 @@ class Checkout extends DatabaseModel
     {
         return 'checkouts';
     }
-    //Get the primary key of the database table (assumption: one column).
+
+    //Get the primary key of the database table.
     static protected function getPrimaryKeyName(): string
     {
         return 'checkout_id';
     }
+
     //Get the mapping column=>property.
     static protected function columnMapping(): array
     {
@@ -34,17 +43,6 @@ class Checkout extends DatabaseModel
             'book_id' => 'bookId',
             'start_time' => 'startTime',
             'end_time' => 'endTime'
-        ];
-    }
-    //Get the mapping property=>label.
-    static protected function propertyMapping(): array
-    {
-        return [
-            'checkoutId' => 'Checkout ID',
-            'userId' => 'User ID',
-            'bookId' => 'Book ID',
-            'startTime' => 'Start Time',
-            'endTime' => 'End Time',
         ];
     }
 
@@ -67,8 +65,20 @@ class Checkout extends DatabaseModel
         ];
     }
 
-    //Read all records from the database
-    public static function getUserCheckouts(int $userId, int $page = 0, int $limit = 10): array
+    //Get the mapping property=>label.
+    static protected function propertyMapping(): array
+    {
+        return [
+            'checkoutId' => 'Checkout ID',
+            'userId' => 'User ID',
+            'bookId' => 'Book ID',
+            'startTime' => 'Start Time',
+            'endTime' => 'End Time',
+        ];
+    }
+
+    //Read all records from the database for a given user.
+    static public function getUserCheckouts(int $userId, int $page = 0, int $limit = 10): array
     {
         $tableName = static::getTableName();
         $columnNames = static::getColumnNames();

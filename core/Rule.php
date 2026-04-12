@@ -1,8 +1,16 @@
 <?php
 
+/**
+ * Lecture Web Engineering
+ */
+
 namespace Bukubuku\Core;
 
-//This represents the different rules which can be validated by the model(s).
+/**
+ * The class Rule represents the different rules which can be validated by the model(s).
+ * Currently, it consists of a constant for each supported rule and of methods to construct
+ * error messages for each rule.
+ */
 class Rule
 {
     public const REQUIRED = 'required';
@@ -16,6 +24,7 @@ class Rule
     public const OPTIONS = 'options';
     public const ISBN = 'isbn';
 
+    //Construct error message.
     static public function constructErrorMessage(string $propertyName, string $propertyLabel, string $ruleName, array $parameters): string
     {
         $errorMessage = Rule::getErrorMessage($ruleName);
@@ -25,20 +34,19 @@ class Rule
             $parameters[RuleParameter::PROPERTY] = $propertyName;
         }
 
-        //Same for label
+        //We do the same for the label.
         if (!array_key_exists(RuleParameter::LABEL, $parameters)) {
             $parameters[RuleParameter::LABEL] = $propertyLabel;
         }
 
         foreach ($parameters as $parameterName => $parameterValue) {
-            //$errorMessage = str_replace('{{' . $parameterName . '}}', $parameterValue, $errorMessage);
             $errorMessage = str_replace('{{' . $parameterName . '}}', strval($parameterValue), $errorMessage);
         }
         return $errorMessage;
     }
 
-    //For each rule there is a corresponding error message. 
-    //The error message can have placeholders
+    /*For each rule there is a corresponding error message. 
+    The error message can have placeholders in the format {{placeholder}}.*/
     static private function getErrorMessage(string $ruleName): string
     {
         switch ($ruleName) {

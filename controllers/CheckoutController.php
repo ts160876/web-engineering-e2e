@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Lecture Web Engineering
+ */
+
 namespace Bukubuku\Controllers;
 
 use Bukubuku\Core\Application;
@@ -8,8 +12,12 @@ use Bukubuku\Models\Checkout;
 use Bukubuku\Models\BookCheckout;
 use Bukubuku\Core\exception\InternalErrorException;
 
+/**
+ * Implements the controller for checkouts.
+ */
 class CheckoutController extends Controller
 {
+    //Create a checkout.
     public function create(): string
     {
         $checkout = Checkout::fromHttp(Application::$app->getFlashMemory(Checkout::class) ?? []);
@@ -48,6 +56,7 @@ class CheckoutController extends Controller
         }
     }
 
+    //Edit a checkout.
     public function edit(): string
     {
         if (Application::$app->getFlashMemory(Checkout::class) != null) {
@@ -95,19 +104,14 @@ class CheckoutController extends Controller
         }
     }
 
+    //List checkouts.
     public function list(): string
     {
         $checkouts = Checkout::getAll();
         return $this->renderView('checkouts/list', ['checkouts' => $checkouts]);
     }
 
-    public function page(): string
-    {
-        $page = Application::$app->request->getParameter('page') ?? 1;
-        $checkouts = Checkout::getAll($page);
-        return $this->renderView('checkouts/page', ['checkouts' => $checkouts, 'page' => $page]);
-    }
-
+    //List checkouts of current user.
     public function myCheckouts(): string
     {
         if (Application::$app->isCustomer() == true) {
@@ -120,6 +124,15 @@ class CheckoutController extends Controller
         }
     }
 
+    //List checkouts (paged).
+    public function page(): string
+    {
+        $page = Application::$app->request->getParameter('page') ?? 1;
+        $checkouts = Checkout::getAll($page);
+        return $this->renderView('checkouts/page', ['checkouts' => $checkouts, 'page' => $page]);
+    }
+
+    //Return checkout.
     public function return(): string
     {
         if (Application::$app->getFlashMemory(BookCheckout::class) != null) {

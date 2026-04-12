@@ -1,8 +1,15 @@
 <?php
 
+/**
+ * Lecture Web Engineering
+ */
+
 namespace Bukubuku\Core;
 
-//This class represents the different rule parameters which can be validated by the model(s).
+/**
+ * The class RuleParameter represents the different rule parameters which can be validated by the model(s).
+ * Currently, it only consists of a few constants.
+ */
 class RuleParameter
 {
     public const PROPERTY = 'property';

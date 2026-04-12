@@ -1,4 +1,9 @@
 <?php
+
+/**
+ * Lecture Web Engineering
+ */
+
 $this->title = 'My Checkouts';
 $nextPage = (int) $page + 1;
 $previousPage = (int) $page - 1;

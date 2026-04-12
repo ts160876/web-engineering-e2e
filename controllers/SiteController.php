@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Lecture Web Engineering
+ */
+
 namespace Bukubuku\Controllers;
 
 use Bukubuku\Core\Application;
@@ -7,14 +11,12 @@ use Bukubuku\Core\Controller;
 use Bukubuku\Models\Contact;
 use Bukubuku\Models\Login;
 
+/**
+ * Implements the controller for the site itself.
+ */
 class SiteController extends Controller
 {
-    public function home(): string
-    {
-        $parameters = ['name' => 'BukuBuku'];
-        return $this->renderView('home', $parameters);
-    }
-
+    //Contact page
     public function contact(): string
     {
         $contact = Contact::fromHttp(Application::$app->getFlashMemory(Contact::class) ?? []);
@@ -53,6 +55,14 @@ class SiteController extends Controller
         }
     }
 
+    //Home page
+    public function home(): string
+    {
+        $parameters = ['name' => 'BukuBuku'];
+        return $this->renderView('home', $parameters);
+    }
+
+    //Login page
     public function login(): string
     {
 
@@ -93,6 +103,7 @@ class SiteController extends Controller
         }
     }
 
+    //Logout
     public function handleLogout(): string|null
     {
         //Logout, i.e. remove the user from the session.

@@ -1,14 +1,23 @@
 <?php
 
+/**
+ * Lecture Web Engineering
+ */
+
 namespace Bukubuku\Models;
 
 use Bukubuku\Core\Application;
 use Bukubuku\Core\Model;
 use Bukubuku\Core\exception\InternalErrorException;
 
+/**
+ * Implements the model for the checkout.
+ * Background: When checking out a book, we need a transaction around the database
+ * operations for the book and the checkout. 
+ */
 class BookCheckout extends Model
 {
-
+    //Properties of the model
     public int $checkoutId = 0;
     public int $userId = 0;
     public string $firstName = '';
@@ -20,6 +29,18 @@ class BookCheckout extends Model
     public ?\DateTime $published = null;
     public int $pages = 0;
     public string $format = '';
+
+    //Get the rulesets.
+    static protected function getRulesets(): array
+    {
+        return [];
+    }
+
+    //Pseudo implementation.
+    protected function isUnique(string $property): bool
+    {
+        return true;
+    }
 
     //Get the mapping property=>label.
     static protected function propertyMapping(): array
@@ -37,18 +58,6 @@ class BookCheckout extends Model
             'pages' => 'Number of Pages',
             'format' => 'Format'
         ];
-    }
-
-    //Get the rulesets.
-    static protected function getRulesets(): array
-    {
-        return [];
-    }
-
-    //Pseudo implementation.
-    protected function isUnique(string $property): bool
-    {
-        return true;
     }
 
     //Prepare checkout.

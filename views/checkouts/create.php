@@ -1,13 +1,15 @@
 <?php
 
+/**
+ * Lecture Web Engineering
+ */
+
 use Bukubuku\Core\Form\Button;
 use Bukubuku\Core\Form\Form;
 use Bukubuku\Core\Form\Field;
 
 $this->title = 'Create Checkout';
-
 $form = new Form('', 'post', $model);
-
 ?>
 
 <h1><?= $this->title ?></h1>

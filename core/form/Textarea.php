@@ -1,9 +1,17 @@
 <?php
 
+/**
+ * Lecture Web Engineering
+ */
+
 namespace Bukubuku\Core\Form;
 
+/**
+ * The class Textarea represents a textarea.
+ */
 class Textarea
 {
+    //Attributes of the textarea
     public string $propertyName;
     public bool $readonly;
     public Form $form;
@@ -19,19 +27,9 @@ class Textarea
         }
     }
 
-    //Print the field
+    //Print the textarea.
     public function __toString()
     {
-
-        //Implement special logic for DateTime
-        if ($this->form->model->{$this->propertyName} instanceof \DateTime) {
-            //$propertyValue = $this->form->model->{$this->propertyName}->format('Y-m-d');
-            $propertyValue = $this->form->model->{$this->propertyName}->format('Y-m-d H:i:s');
-        } else {
-            $propertyValue = $this->form->model->{$this->propertyName};
-        }
-
-
         return sprintf(
             '<div class="mb-3">
               <label for="%s">%s</label>
@@ -47,7 +45,7 @@ class Textarea
             $this->readonly ? 'readonly' : '',
             $this->readonly ? 'bg-light' : '',
             $this->form->model->hasError($this->propertyName) ? ' is-invalid' : '',
-            $propertyValue,
+            $this->form->model->{$this->propertyName},
             $this->form->model->getFirstError($this->propertyName)
         );
     }

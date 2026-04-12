@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Lecture Web Engineering
+ */
+
 use Bukubuku\Core\Application;
 use Bukubuku\Core\Form\Button;
 use Bukubuku\Core\Form\Form;
@@ -13,9 +17,7 @@ if (Application::$app->isAdmin() == true) {
     $readonly = true;
     $this->title = 'Display Book';
 }
-
 $form = new Form('', 'post', $model, $readonly);
-
 ?>
 
 <h1><?= $this->title ?></h1>

@@ -1,26 +1,23 @@
 <?php
 
+/**
+ * Lecture Web Engineering
+ */
+
 namespace Bukubuku\Models;
 
 use Bukubuku\Core\Model;
 use Bukubuku\Core\Rule;
 
+/**
+ * Implements the model for contact requests.
+ */
 class Contact extends Model
 {
-
+    //Properties of the model
     public string $subject = '';
     public string $email = '';
     public string $message = '';
-
-    //Get the mapping property=>label.
-    static protected function propertyMapping(): array
-    {
-        return [
-            'subject' => 'Subject',
-            'email' => 'E-Mail',
-            'message' => 'Message',
-        ];
-    }
 
     //Get the rulesets.
     static protected function getRulesets(): array
@@ -45,7 +42,17 @@ class Contact extends Model
         return true;
     }
 
-    //Process the contact request.
+    //Get the mapping property=>label.
+    static protected function propertyMapping(): array
+    {
+        return [
+            'subject' => 'Subject',
+            'email' => 'E-Mail',
+            'message' => 'Message',
+        ];
+    }
+
+    //Process the contact request. Currently this does nothing.
     public function process(): bool
     {
         return true;

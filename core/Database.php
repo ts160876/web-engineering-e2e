@@ -1,16 +1,30 @@
 <?php
 
+/**
+ * Lecture Web Engineering
+ */
+
 namespace Bukubuku\Core;
 
+use Bukubuku\Core\exception\DatabaseException;
+
+/**
+ * The class Database handles all communication with the database.
+ */
 class Database
 {
 
-    public \PDO $pdo;
+    /*Instance of PDO class. We define is as private and channel all
+    communication with the database through the Database class.*/
+    private \PDO $pdo;
 
     public function __construct(string $dsn, string $username, string $password)
     {
-        $this->pdo = new \PDO($dsn, $username, $password);
-
+        try {
+            $this->pdo = new \PDO($dsn, $username, $password);
+        } catch (\Exception $exception) {
+            throw new DatabaseException();
+        }
 
         //Throw exceptions in case of errors.
         $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
@@ -19,23 +33,44 @@ class Database
         $this->pdo->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
     }
 
-    public function prepare($query)
+    //Prepare a statement.
+    public function prepare(string $query): \PDOStatement|false
     {
-        return $this->pdo->prepare($query);
+        try {
+            return $this->pdo->prepare($query);
+        } catch (\Exception $exception) {
+            throw new DatabaseException();
+        }
     }
 
-    public function beginTransaction()
+    //The following three methods are used for transaction handling.
+    //Begin a new transaction.
+    public function beginTransaction(): bool
     {
-        return $this->pdo->beginTransaction();
+        try {
+            return $this->pdo->beginTransaction();
+        } catch (\Exception $exception) {
+            throw new DatabaseException();
+        }
     }
 
-    public function commit()
+    //Commit the running transaction.
+    public function commit(): bool
     {
-        return $this->pdo->commit();
+        try {
+            return $this->pdo->commit();
+        } catch (\Exception $exception) {
+            throw new DatabaseException();
+        }
     }
 
-    public function rollback()
+    //Rollback the running transaction.
+    public function rollback(): bool
     {
-        return $this->pdo->rollBack();
+        try {
+            return $this->pdo->rollBack();
+        } catch (\Exception $exception) {
+            throw new DatabaseException();
+        }
     }
 }

@@ -1,26 +1,24 @@
 <?php
 
+/**
+ * Lecture Web Engineering
+ */
+
 namespace Bukubuku\Models;
 
 use Bukubuku\Core\Model;
 use Bukubuku\Core\Rule;
 
+/**
+ * Implements the model for the login.
+ */
 class Login extends Model
 {
 
+    //Properties of the model
     public int $userId = 0;
     public string $email = '';
     public string $password = '';
-
-    //Get the mapping property=>label.
-    static protected function propertyMapping(): array
-    {
-        return [
-            'userId' => 'User ID',
-            'email' => 'E-Mail',
-            'password' => 'Password',
-        ];
-    }
 
     //Get the rulesets.
     static protected function getRulesets(): array
@@ -42,6 +40,16 @@ class Login extends Model
         return true;
     }
 
+    //Get the mapping property=>label.
+    static protected function propertyMapping(): array
+    {
+        return [
+            'userId' => 'User ID',
+            'email' => 'E-Mail',
+            'password' => 'Password',
+        ];
+    }
+
     //Login user.
     public function login(): bool
     {
@@ -57,7 +65,7 @@ class Login extends Model
     //Logout user.
     public function logout(): bool
     {
-        //There are not preconditions to be fulfilled to logout.
+        //There are no preconditions to be fulfilled to logout.
         //Hence the function always returns true;
         $this->userId = 0;
         $this->email = '';

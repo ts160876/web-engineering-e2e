@@ -1,4 +1,9 @@
 <?php
+
+/**
+ * Lecture Web Engineering
+ */
+
 $this->title = 'Error';
 ?>
 

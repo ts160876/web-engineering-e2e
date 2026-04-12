@@ -1,9 +1,17 @@
 <?php
 
+/**
+ * Lecture Web Engineering
+ */
+
 namespace Bukubuku\Core\Form;
 
+/**
+ * The class DropdownField represents a dropdown field.
+ */
 class DropdownField
 {
+    //Attributes of the button
     public string $propertyName;
     public array $options;
     public bool $readonly;
@@ -21,11 +29,10 @@ class DropdownField
         }
     }
 
-    //Print the field
+    //Print the dropdown field.
     public function __toString()
     {
-
-        //$optionString = '<option value="">--Select a value--</option>';
+        //Generate the available dropdown values based on the options property.
         $optionString = '';
         foreach ($this->options as $optionValue => $optionText) {
             $optionString .= sprintf(
@@ -50,8 +57,8 @@ class DropdownField
             $this->form->model->getLabel($this->propertyName),
             $this->propertyName,
             $this->propertyName,
-            //We assume that the value of a disabled dropdown field is not needed.
-            //That will not necessarily hold true in productive environments.
+            /*We assume that the value of a disabled dropdown field is not needed.
+            That will not necessarily hold true in productive environments.*/
             $this->readonly ? 'disabled' : '',
             $this->form->model->hasError($this->propertyName) ? ' is-invalid' : '',
             $optionString,

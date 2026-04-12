@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Lecture Web Engineering
+ */
+
 namespace Bukubuku\Controllers;
 
 use Bukubuku\Core\Application;
@@ -7,16 +11,20 @@ use Bukubuku\Core\Controller;
 use Bukubuku\Models\User;
 use Bukubuku\Core\exception\InternalErrorException;
 
+/**
+ * Implements the controller for users.
+ */
 class UserController extends Controller
 {
 
-    public function registration(): string
+    //Create a user.
+    public function create(): string
     {
         $user = User::fromHttp(Application::$app->getFlashMemory(User::class) ?? []);
-        return $this->renderView('registration', ['model' => $user]);
+        return $this->renderView('/users/create', ['model' => $user]);
     }
 
-    public function handleRegistration(): string|null
+    public function handleCreate(): string|null
     {
         //Get the data from the (POST) request.
         $user = User::fromHttp(
@@ -25,65 +33,17 @@ class UserController extends Controller
 
         //Validate the data.
         if ($user->validateData() == true) {
-            if ($user->register() == true) {
-                //Registration was successful. 
-                Application::$app->setFlashSuccessMessage('You have successfully registered.');
-                //Redirect to home.
-                Application::$app->response->redirect('/');
-                return null;
-            } else {
-                //Registration as not successful.
-                Application::$app->setFlashErrorMessage('Your registration failed.');
-                //Redirect back to the form.
-                Application::$app->response->redirect('/registration');
-                return null;
-            }
-        } else {
-            //Validation has errors.
-            Application::$app->setFlashErrorMessage('The form has errors. Please correct them.');
-            Application::$app->setFlashMemory(User::class, $user->toHttp());
-            //Redirect back to the form.
-            Application::$app->response->redirect('/registration');
-            return null;
-        }
-    }
-
-    public function myProfile(): string
-    {
-        if (Application::$app->getFlashMemory(User::class) != null) {
-            $user = User::fromHttp(Application::$app->getFlashMemory(User::class));
-        } else {
-            $userId = Application::$app->getUserId();
-            if ($userId != null) {
-                $user = User::fromDatabase($userId);
-            } else {
-                throw new InternalErrorException();
-            }
-        }
-        return $this->renderView('/myprofile', ['model' => $user]);
-    }
-
-
-    public function handleMyProfile(): string|null
-    {
-        //Get the data from the (POST) request.
-        $user = User::fromHttp(
-            ['properties' => Application::$app->request->getParameters()]
-        );
-
-        //Validate the data.
-        if ($user->validateData() == true) {
-            if ($user->update() == true) {
+            if ($user->insert() == true) {
                 //Creation was successful. 
-                Application::$app->setFlashSuccessMessage('You have successfully updated your profile.');
+                Application::$app->setFlashSuccessMessage('You have successfully create the user.');
                 //Redirect to home.
                 Application::$app->response->redirect('/');
                 return null;
             } else {
                 //Registration as not successful.
-                Application::$app->setFlashErrorMessage('Your profile update failed.');
+                Application::$app->setFlashErrorMessage('The user creation failed.');
                 //Redirect back to the form.
-                Application::$app->response->redirect('/myprofile');
+                Application::$app->response->redirect('/users/create');
                 return null;
             }
         } else {
@@ -91,24 +51,12 @@ class UserController extends Controller
             Application::$app->setFlashErrorMessage('The form has errors. Please correct them.');
             Application::$app->setFlashMemory(User::class, $user->toHttp());
             //Redirect back to the form.
-            Application::$app->response->redirect("/myprofile");
+            Application::$app->response->redirect('/users/create');
             return null;
         }
     }
 
-    public function list(): string
-    {
-        $users = User::getAll();
-        return $this->renderView('users/list', ['users' => $users]);
-    }
-
-    public function page(): string
-    {
-        $page = Application::$app->request->getParameter('page') ?? 1;
-        $users = User::getAll($page);
-        return $this->renderView('users/page', ['users' => $users, 'page' => $page]);
-    }
-
+    //Edit a user.
     public function edit(): string
     {
         if (Application::$app->getFlashMemory(User::class) != null) {
@@ -156,13 +104,30 @@ class UserController extends Controller
         }
     }
 
-    public function create(): string
+    //List users.
+    public function list(): string
     {
-        $user = User::fromHttp(Application::$app->getFlashMemory(User::class) ?? []);
-        return $this->renderView('/users/create', ['model' => $user]);
+        $users = User::getAll();
+        return $this->renderView('users/list', ['users' => $users]);
     }
 
-    public function handleCreate(): string|null
+    //Edit profile of current user.
+    public function myProfile(): string
+    {
+        if (Application::$app->getFlashMemory(User::class) != null) {
+            $user = User::fromHttp(Application::$app->getFlashMemory(User::class));
+        } else {
+            $userId = Application::$app->getUserId();
+            if ($userId != null) {
+                $user = User::fromDatabase($userId);
+            } else {
+                throw new InternalErrorException();
+            }
+        }
+        return $this->renderView('/myprofile', ['model' => $user]);
+    }
+
+    public function handleMyProfile(): string|null
     {
         //Get the data from the (POST) request.
         $user = User::fromHttp(
@@ -171,17 +136,17 @@ class UserController extends Controller
 
         //Validate the data.
         if ($user->validateData() == true) {
-            if ($user->insert() == true) {
+            if ($user->update() == true) {
                 //Creation was successful. 
-                Application::$app->setFlashSuccessMessage('You have successfully create the user.');
+                Application::$app->setFlashSuccessMessage('You have successfully updated your profile.');
                 //Redirect to home.
                 Application::$app->response->redirect('/');
                 return null;
             } else {
                 //Registration as not successful.
-                Application::$app->setFlashErrorMessage('The user creation failed.');
+                Application::$app->setFlashErrorMessage('Your profile update failed.');
                 //Redirect back to the form.
-                Application::$app->response->redirect('/users/create');
+                Application::$app->response->redirect('/myprofile');
                 return null;
             }
         } else {
@@ -189,7 +154,54 @@ class UserController extends Controller
             Application::$app->setFlashErrorMessage('The form has errors. Please correct them.');
             Application::$app->setFlashMemory(User::class, $user->toHttp());
             //Redirect back to the form.
-            Application::$app->response->redirect('/users/create');
+            Application::$app->response->redirect("/myprofile");
+            return null;
+        }
+    }
+
+    //List users (paged).
+    public function page(): string
+    {
+        $page = Application::$app->request->getParameter('page') ?? 1;
+        $users = User::getAll($page);
+        return $this->renderView('users/page', ['users' => $users, 'page' => $page]);
+    }
+
+    //Register user (i.e., a guest can create their own account).
+    public function registration(): string
+    {
+        $user = User::fromHttp(Application::$app->getFlashMemory(User::class) ?? []);
+        return $this->renderView('registration', ['model' => $user]);
+    }
+
+    public function handleRegistration(): string|null
+    {
+        //Get the data from the (POST) request.
+        $user = User::fromHttp(
+            ['properties' => Application::$app->request->getParameters()]
+        );
+
+        //Validate the data.
+        if ($user->validateData() == true) {
+            if ($user->register() == true) {
+                //Registration was successful. 
+                Application::$app->setFlashSuccessMessage('You have successfully registered.');
+                //Redirect to home.
+                Application::$app->response->redirect('/');
+                return null;
+            } else {
+                //Registration as not successful.
+                Application::$app->setFlashErrorMessage('Your registration failed.');
+                //Redirect back to the form.
+                Application::$app->response->redirect('/registration');
+                return null;
+            }
+        } else {
+            //Validation has errors.
+            Application::$app->setFlashErrorMessage('The form has errors. Please correct them.');
+            Application::$app->setFlashMemory(User::class, $user->toHttp());
+            //Redirect back to the form.
+            Application::$app->response->redirect('/registration');
             return null;
         }
     }

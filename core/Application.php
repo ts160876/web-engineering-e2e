@@ -1,19 +1,32 @@
 <?php
 
+/**
+ * Lecture Web Engineering
+ */
+
 namespace Bukubuku\Core;
 
 use Bukubuku\Models\User;
 
+/**
+ * The class Application represents the overall web application.
+ */
 class Application
 {
-    public static Application $app;
+    /*This property stores the instances to the application itself. This allows to instantiate the 
+    application once at the beginning of the HTTP request and access it from everywhere via the static
+    * property.*/
+    static public Application $app;
 
     public Request $request;
     public Response $response;
     public Session $session;
     public Router $router;
     public Database $db;
+
+    //Root directory
     public string $rootDirectory;
+    //Array with the authorizations for the three roles (i.e., admin, customer, guest).
     public array $authorizations;
 
     public function __construct(string $dsn, string $username, string $password, string $rootDirectory, array $authorizations)
@@ -28,6 +41,7 @@ class Application
         $this->authorizations = $authorizations;
     }
 
+    //Run the application, i.e. resolve the HTTP request.
     public function run()
     {
         try {
@@ -38,21 +52,25 @@ class Application
         }
     }
 
+    //Login the user.
     public function login(int $userId)
     {
         $this->session->set('userId', $userId);
     }
 
+    //Logout the user.
     public function logout()
     {
         $this->session->unset('userId');
     }
 
+    //Get the ID of the (logged in) user.
     public function getUserId(): int|null
     {
         return $this->session->get('userId');
     }
 
+    //Is the user a guest?
     public function isGuest(): bool
     {
         if ($this->getUserId() == null) {
@@ -62,6 +80,7 @@ class Application
         }
     }
 
+    //Is the user an administrator?
     public function isAdmin(): bool
     {
         if (!$this->isGuest()) {
@@ -76,6 +95,7 @@ class Application
         }
     }
 
+    //Is the user a customer?
     public function isCustomer(): bool
     {
         if (!$this->isGuest()) {
@@ -90,6 +110,7 @@ class Application
         }
     }
 
+    //Get the full name of the (logged in) user.
     public function getFullName(): string
     {
         if (!$this->isGuest()) {
@@ -100,6 +121,7 @@ class Application
         }
     }
 
+    //Get the role of the user.
     private function getRole(): string
     {
         if ($this->isAdmin()) {
@@ -112,6 +134,7 @@ class Application
         return $role;
     }
 
+    //Is the user authorized for the path?
     public function isAuthorized(string $path): bool
     {
         //Determine the user role.
@@ -126,37 +149,43 @@ class Application
         }
     }
 
+    //Determine the complete URL based on the path.
     public function pathToUrl(string $path): string
     {
         return $this->request->getScriptName() . $path;
     }
 
-    //Set and get flash memory.
+    //Write to the flash memory (encapsulates session).
     public function setFlashMemory($key, $value)
     {
         $this->session->setFlashMemory($key, $value);
     }
 
+    //Read from the flash memory (encapsulates session).
     public function getFlashMemory($key)
     {
         return $this->session->getFlashMemory($key);
     }
 
-    //Set and get success flash message.
+    //Write a success message to the flash memory.
     public function setFlashSuccessMessage(string $message)
     {
         $this->session->setFlashMemory('success', $message);
     }
+
+    //Read the success message from the flash memory.
     public function getFlashSuccessMessage(): string
     {
         return $this->session->getFlashMemory('success');
     }
 
-    //Set and get success flash message.
+    //Write an error message to the flash memory.
     public function setFlashErrorMessage(string $message)
     {
         $this->session->setFlashMemory('error', $message);
     }
+
+    //Read the error message from the flash memory.
     public function getFlashErrorMessage(): string
     {
         return $this->session->getFlashMemory('error');

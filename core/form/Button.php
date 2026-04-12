@@ -1,11 +1,20 @@
 <?php
 
+/**
+ * Lecture Web Engineering
+ */
+
 namespace Bukubuku\Core\Form;
 
+/**
+ * The class Button represents a button.
+ */
 class Button
 {
+    //Currently we only have tested submit buttons.
     public const SUBMIT = 'submit';
 
+    //Attributes of the button
     public string $type;
     public string $buttonName;
     public string $buttonText;
@@ -25,7 +34,7 @@ class Button
         }
     }
 
-    //Print the field
+    //Print the button.
     public function __toString()
     {
         return sprintf(

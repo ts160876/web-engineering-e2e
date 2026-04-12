@@ -1,19 +1,29 @@
 <?php
 
+/**
+ * Lecture Web Engineering
+ */
+
 namespace Bukubuku\Models;
 
 use Bukubuku\Core\DatabaseModel;
 use Bukubuku\Core\Rule;
 use Bukubuku\Core\RuleParameter;
 
+/**
+ * Implements the model for the user.
+ */
 class User extends DatabaseModel
 {
+    //Properties of the model
     public int $userId = 0;
     public string $firstName = '';
     public string $lastName = '';
     public string $email = '';
     public string $password = '';
+    //The UI needs a second field to confirm the password.
     public string $confirmPassword = '';
+    //The database needs to store the password hash.
     public string $hashedPassword = '';
     //And a boolean is treated as TINYINT by MySQL.
     public int $isAdmin = 0;
@@ -23,11 +33,13 @@ class User extends DatabaseModel
     {
         return 'users';
     }
-    //Get the primary key of the database table (assumption: one column).
+
+    //Get the primary key of the database table.
     static protected function getPrimaryKeyName(): string
     {
         return 'user_id';
     }
+
     //Get the mapping column=>property.
     static protected function columnMapping(): array
     {
@@ -38,19 +50,6 @@ class User extends DatabaseModel
             'email' => 'email',
             'pwd' => 'hashedPassword',
             'is_admin' => 'isAdmin',
-        ];
-    }
-    //Get the mapping property=>label.
-    static protected function propertyMapping(): array
-    {
-        return [
-            'userId' => 'User ID',
-            'firstName' => 'First Name',
-            'lastName' => 'Last Name',
-            'email' => 'E-Mail',
-            'password' => 'Password',
-            'confirmPassword' => 'Confirm Password',
-            'isAdmin' => 'User Role'
         ];
     }
 
@@ -85,40 +84,50 @@ class User extends DatabaseModel
         ];
     }
 
-    public function insert(): bool
+    //Get the mapping property=>label.
+    static protected function propertyMapping(): array
     {
-        //We need to hash the password.
-        $this->hashedPassword = password_hash($this->password, PASSWORD_DEFAULT);
-        return parent::insert();
+        return [
+            'userId' => 'User ID',
+            'firstName' => 'First Name',
+            'lastName' => 'Last Name',
+            'email' => 'E-Mail',
+            'password' => 'Password',
+            'confirmPassword' => 'Confirm Password',
+            'isAdmin' => 'User Role'
+        ];
     }
 
-    public function update(array $properties = []): bool
+    //Check the login based on email and password.
+    static public function checkLogin(string $email, string $password): bool
     {
-        //We need to hash the password.
-        $this->hashedPassword = password_hash($this->password, PASSWORD_DEFAULT);
-        return parent::update($properties);
-    }
-
-    public function register(): bool
-    {
-        return $this->insert();
-    }
-
-    public function checkPassword($password): bool
-    {
-        if (password_verify($password, $this->hashedPassword)) {
-            return true;
+        $userId = User::getUserIdByEmail($email);
+        if ($userId != 0) {
+            $user = User::fromDatabase($userId);
+            return $user->checkPassword($password);
         } else {
             return false;
         }
     }
 
-    public function getFullName(): string
+    //Get dropdown values for isAdmin.
+    static public function getIsAdminDropdown(): array
     {
-        return $this->firstName . ' ' . $this->lastName;
+        return [
+            0 => 'Customer',
+            1 => 'Administrator'
+        ];
     }
 
-    public static function getUserIdByEmail(string $email): int
+    //Get text for isAdmin.
+    static public function getIsAdminText(int $isAdmin): string
+    {
+        $dropdown = static::getIsAdminDropdown();
+        return $dropdown[$isAdmin] ?? $isAdmin;
+    }
+
+    //Get a user by the email.
+    static public function getUserIdByEmail(string $email): int
     {
         //Create SQL statement
         $query = "SELECT user_id FROM users WHERE email = :email;";
@@ -130,28 +139,41 @@ class User extends DatabaseModel
         return $x;
     }
 
-    public static function checkLogin(string $email, string $password): bool
+    //Verify the password.
+    public function checkPassword($password): bool
     {
-        $userId = User::getUserIdByEmail($email);
-        if ($userId != 0) {
-            $user = User::fromDatabase($userId);
-            return $user->checkPassword($password);
+        if (password_verify($password, $this->hashedPassword)) {
+            return true;
         } else {
             return false;
         }
     }
 
-    static public function getIsAdminDropdown(): array
+    //Get the fullname. 
+    public function getFullName(): string
     {
-        return [
-            0 => 'Customer',
-            1 => 'Administrator'
-        ];
+        return $this->firstName . ' ' . $this->lastName;
     }
 
-    static public function getIsAdminText(int $isAdmin): string
+    //Insert the instance of the model into the database.
+    public function insert(): bool
     {
-        $dropdown = static::getIsAdminDropdown();
-        return $dropdown[$isAdmin] ?? $isAdmin;
+        //We need to hash the password.
+        $this->hashedPassword = password_hash($this->password, PASSWORD_DEFAULT);
+        return parent::insert();
+    }
+
+    //Register the use (just a wrapper for insert).
+    public function register(): bool
+    {
+        return $this->insert();
+    }
+
+    //Update the instance of the model in the database.
+    public function update(array $properties = []): bool
+    {
+        //We need to hash the password.
+        $this->hashedPassword = password_hash($this->password, PASSWORD_DEFAULT);
+        return parent::update($properties);
     }
 }

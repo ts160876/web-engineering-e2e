@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Lecture Web Engineering
+ */
+
 namespace Bukubuku\Controllers;
 
 use Bukubuku\Core\Application;
@@ -8,9 +12,57 @@ use Bukubuku\Models\Book;
 use Bukubuku\Models\BookCheckout;
 use Bukubuku\Core\exception\InternalErrorException;
 
+/**
+ * Implements the controller for books.
+ */
 class BookController extends Controller
 {
 
+    //Checkout a book.
+    public function checkout(): string
+    {
+        if (Application::$app->getFlashMemory(BookCheckout::class) != null) {
+            $bookCheckout = BookCheckout::fromHttp(Application::$app->getFlashMemory(BookCheckout::class));
+        } else {
+            if (Application::$app->isCustomer() == true) {
+                $userId = Application::$app->getUserId();
+                $bookId = Application::$app->request->getParameter('bookId');
+                if ($userId != null && $bookId != null) {
+                    $bookCheckout = BookCheckout::prepareCheckout($userId, $bookId);
+                } else {
+                    throw new InternalErrorException();
+                }
+            } else {
+                throw new InternalErrorException();
+            }
+        }
+        return $this->renderView('books/checkout', ['model' => $bookCheckout]);
+    }
+
+    public function handleCheckout(): string|null
+    {
+        //Get the data from the (POST) request.
+        $bookCheckout = BookCheckOut::fromHttp(
+            ['properties' => Application::$app->request->getParameters()]
+        );
+
+        //Validate the data. We keep this a bit simple here, since all fields are readonly.
+        if ($bookCheckout->checkoutBook() == true) {
+            //Checkout was successful. 
+            Application::$app->setFlashSuccessMessage('You have successfully checked out.');
+            //Redirect to home.
+            Application::$app->response->redirect('/');
+            return null;
+        } else {
+            //Registration as not successful.
+            Application::$app->setFlashErrorMessage('Your checkout failed.');
+            //Redirect to home.
+            Application::$app->response->redirect('/');
+            return null;
+        }
+    }
+
+    //Create a book.
     public function create(): string
     {
         $book = Book::fromHttp(Application::$app->getFlashMemory(Book::class) ?? []);
@@ -49,6 +101,7 @@ class BookController extends Controller
         }
     }
 
+    //Edit a book.
     public function edit(): string
     {
         if (Application::$app->getFlashMemory(Book::class) != null) {
@@ -96,59 +149,18 @@ class BookController extends Controller
         }
     }
 
+    //List books.
     public function list(): string
     {
         $books = Book::getAll();
         return $this->renderView('books/list', ['books' => $books]);
     }
 
+    //List books (paged).
     public function page(): string
     {
         $page = Application::$app->request->getParameter('page') ?? 1;
         $books = Book::getAll($page, 5);
         return $this->renderView('books/page', ['books' => $books, 'page' => $page]);
-    }
-
-    public function checkout(): string
-    {
-        if (Application::$app->getFlashMemory(BookCheckout::class) != null) {
-            $bookCheckout = BookCheckout::fromHttp(Application::$app->getFlashMemory(BookCheckout::class));
-        } else {
-            if (Application::$app->isCustomer() == true) {
-                $userId = Application::$app->getUserId();
-                $bookId = Application::$app->request->getParameter('bookId');
-                if ($userId != null && $bookId != null) {
-                    $bookCheckout = BookCheckout::prepareCheckout($userId, $bookId);
-                } else {
-                    throw new InternalErrorException();
-                }
-            } else {
-                throw new InternalErrorException();
-            }
-        }
-        return $this->renderView('books/checkout', ['model' => $bookCheckout]);
-    }
-
-    public function handleCheckout(): string|null
-    {
-        //Get the data from the (POST) request.
-        $bookCheckout = BookCheckOut::fromHttp(
-            ['properties' => Application::$app->request->getParameters()]
-        );
-
-        //Validate the data. We keep this a bit simple here, since all fields are readonly.
-        if ($bookCheckout->checkoutBook() == true) {
-            //Checkout was successful. 
-            Application::$app->setFlashSuccessMessage('You have successfully checked out.');
-            //Redirect to home.
-            Application::$app->response->redirect('/');
-            return null;
-        } else {
-            //Registration as not successful.
-            Application::$app->setFlashErrorMessage('Your checkout failed.');
-            //Redirect to home.
-            Application::$app->response->redirect('/');
-            return null;
-        }
     }
 }
