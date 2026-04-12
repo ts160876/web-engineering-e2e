@@ -18,6 +18,7 @@ class Field
     public const DATE = 'date';
     public const DATETIME = 'datetime-local';
     public const NUMBER = 'number';
+    public const HIDDEN = 'hidden';
 
     //Attributes of the field
     public string $type;
@@ -54,24 +55,44 @@ class Field
             $propertyValue = $this->form->model->{$this->propertyName};
         }
 
-        return sprintf(
-            '<div class="mb-3">
-              <label for="%s">%s</label>
-              <input type="%s" id="%s" name="%s" value="%s" %s class="form-control %s %s">
-              <div class="invalid-feedback">
-                %s
-              </div>
-            </div>',
-            htmlspecialchars($this->propertyName),
-            htmlspecialchars($this->form->model->getLabel($this->propertyName)),
-            htmlspecialchars($this->type),
-            htmlspecialchars($this->propertyName),
-            htmlspecialchars($this->propertyName),
-            htmlspecialchars($propertyValue),
-            htmlspecialchars($this->readonly ? 'readonly' : ''),
-            htmlspecialchars($this->readonly ? 'bg-light' : ''),
-            htmlspecialchars($this->form->model->hasError($this->propertyName) ? ' is-invalid' : ''),
-            htmlspecialchars($this->form->model->getFirstError($this->propertyName))
-        );
+        if ($this->type != Field::HIDDEN) {
+            return sprintf(
+                '<div class="mb-3">
+                   <label for="%s">%s</label>
+                     <input type="%s" id="%s" name="%s" value="%s" %s class="form-control %s %s">
+                     <div class="invalid-feedback">
+                       %s
+                   </div>
+                 </div>',
+                htmlspecialchars($this->propertyName),
+                htmlspecialchars($this->form->model->getLabel($this->propertyName)),
+                htmlspecialchars($this->type),
+                htmlspecialchars($this->propertyName),
+                htmlspecialchars($this->propertyName),
+                htmlspecialchars($propertyValue ?? ''),
+                htmlspecialchars($this->readonly ? 'readonly' : ''),
+                htmlspecialchars($this->readonly ? 'bg-light' : ''),
+                htmlspecialchars($this->form->model->hasError($this->propertyName) ? ' is-invalid' : ''),
+                htmlspecialchars($this->form->model->getFirstError($this->propertyName))
+            );
+        } else {
+            //Special logic for hidden field
+            return sprintf(
+                '<div class="mb-3">
+                   <input type="%s" id="%s" name="%s" value="%s" %s class="form-control %s %s">
+                   <div class="invalid-feedback">
+                     %s
+                   </div>
+                </div>',
+                htmlspecialchars($this->type),
+                htmlspecialchars($this->propertyName),
+                htmlspecialchars($this->propertyName),
+                htmlspecialchars($propertyValue ?? ''),
+                htmlspecialchars($this->readonly ? 'readonly' : ''),
+                htmlspecialchars($this->readonly ? 'bg-light' : ''),
+                htmlspecialchars($this->form->model->hasError($this->propertyName) ? ' is-invalid' : ''),
+                htmlspecialchars($this->form->model->getFirstError($this->propertyName))
+            );
+        }
     }
 }

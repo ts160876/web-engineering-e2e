@@ -32,7 +32,7 @@ $this->title = 'List Checkouts';
                 <td><?= htmlspecialchars($checkout['userId']) ?></td>
                 <td><?= htmlspecialchars($checkout['bookId']) ?></td>
                 <td><?= htmlspecialchars($checkout['startTime']) ?></td>
-                <td><?= htmlspecialchars($checkout['endTime']) ?></td>
+                <td><?= htmlspecialchars($checkout['endTime'] ?? '') ?></td>
             </tr>
         <?php endforeach; ?>
     </tbody>

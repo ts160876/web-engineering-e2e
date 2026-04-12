@@ -53,9 +53,14 @@ class Contact extends Model
         ];
     }
 
-    //Process the contact request. Currently this does nothing.
+    //Process the contact request. 
     public function process(): bool
     {
-        return true;
+        //Simulate an error :-)
+        if ($this->subject != 'Error') {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

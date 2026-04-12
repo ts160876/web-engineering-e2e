@@ -37,9 +37,9 @@ class DropdownField
         foreach ($this->options as $optionValue => $optionText) {
             $optionString .= sprintf(
                 '<option value="%s" %s>%s</option>',
-                $optionValue,
-                $this->form->model->{$this->propertyName} == $optionValue ? 'selected' : '',
-                $optionText
+                htmlspecialchars($optionValue),
+                htmlspecialchars($this->form->model->{$this->propertyName} == $optionValue ? 'selected' : ''),
+                htmlspecialchars($optionText)
             );
         }
 
@@ -61,7 +61,7 @@ class DropdownField
             That will not necessarily hold true in productive environments.*/
             htmlspecialchars($this->readonly ? 'disabled' : ''),
             htmlspecialchars($this->form->model->hasError($this->propertyName) ? ' is-invalid' : ''),
-            htmlspecialchars($optionString),
+            $optionString,
             htmlspecialchars($this->form->model->getFirstError($this->propertyName))
         );
     }

@@ -46,7 +46,7 @@ use Bukubuku\Core\Application;
                                 <!-- We only display the paged table
                                 <li><a class="dropdown-item" href="/web-engineering-e2e/public/index.php/books/list">List Books</a></li>-->
                                 <?php if (Application::$app->isAuthorized('/books/page')): ?>
-                                    <li><a class="dropdown-item" href="<?= Application::$app->pathToUrl('/books/page') ?>">List Books</a></li>
+                                    <li><a class="dropdown-item" href="<?= Application::$app->pathToUrl('/books/page?page=1') ?>">List Books</a></li>
                                 <?php endif; ?>
                             </ul>
                         </li>
@@ -64,10 +64,10 @@ use Bukubuku\Core\Application;
                                 <!-- We only display the paged table
                                 <li><a class="dropdown-item" href="/web-engineering-e2e/public/index.php/checkouts/list">List Checkouts</a></li>-->
                                 <?php if (Application::$app->isAuthorized('/checkouts/page')): ?>
-                                    <li><a class="dropdown-item" href="<?= Application::$app->pathToUrl('/checkouts/page') ?>">List Checkouts</a></li>
+                                    <li><a class="dropdown-item" href="<?= Application::$app->pathToUrl('/checkouts/page?page=1') ?>">List Checkouts</a></li>
                                 <?php endif; ?>
                                 <?php if (Application::$app->isAuthorized('/checkouts/mycheckouts')): ?>
-                                    <li><a class="dropdown-item" href="<?= Application::$app->pathToUrl('/checkouts/mycheckouts') ?>">My Checkouts</a></li>
+                                    <li><a class="dropdown-item" href="<?= Application::$app->pathToUrl('/checkouts/mycheckouts?page=1') ?>">My Checkouts</a></li>
                                 <?php endif; ?>
                             </ul>
                         </li>
@@ -85,7 +85,7 @@ use Bukubuku\Core\Application;
                                 <!-- We only display the paged table
                                 <li><a class="dropdown-item" href="/web-engineering-e2e/public/index.php/users/list">List Users</a></li>-->
                                 <?php if (Application::$app->isAuthorized('/users/page')): ?>
-                                    <li><a class="dropdown-item" href="<?= Application::$app->pathToUrl('/users/page') ?>">List Users</a></li>
+                                    <li><a class="dropdown-item" href="<?= Application::$app->pathToUrl('/users/page?page=1') ?>">List Users</a></li>
                                 <?php endif; ?>
                             </ul>
                         </li>

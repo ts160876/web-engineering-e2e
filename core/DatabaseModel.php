@@ -155,8 +155,7 @@ abstract class DatabaseModel extends Model
         }
 
         //Execute the statement.
-        $statement->execute();
-        return true;
+        return $statement->execute();
     }
 
     //Update the instance of the model in the database.
@@ -199,8 +198,7 @@ abstract class DatabaseModel extends Model
         }
 
         //Execute the statement.
-        $statement->execute();
-        return true;
+        return $statement->execute();
     }
 
     //Check if the value of a the given property is unique and does not already exist in the database.
